@@ -27,6 +27,12 @@ public class RecipeResearchable implements IRecipe {
 	protected IRecipe recipe;
 	protected TechNode tech;
 
+	public RecipeResearchable(IRecipe recipe, TechNode tech) {
+		this.recipe = recipe;
+		this.tech = tech;
+
+	}
+
 	protected EntityPlayer findPlayer(InventoryCrafting inv) {
 		try {
 			Container container = (Container) eventHandlerField.get(inv);

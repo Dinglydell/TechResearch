@@ -7,9 +7,11 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import dinglydell.techresearch.recipe.CraftingReplacementHandler;
 
 @Mod(modid = TechResearch.MODID, version = TechResearch.VERSION)
 public class TechResearch {
@@ -66,7 +68,14 @@ public class TechResearch {
 					new String[] {},
 					"The node requires any of these nodes to be unlocked");
 
+			TechTree.AddTechNode(new TechNode(c, unlocks, biology, chemistry,
+					physics, requiresAll, requiresAny));
+
 		}
+	}
+
+	public void init(FMLInitializationEvent event) {
+		TechTree.addHandler(new CraftingReplacementHandler());
 	}
 
 	public void postInit(FMLPostInitializationEvent event) {
@@ -74,7 +83,9 @@ public class TechResearch {
 	}
 
 	private void setDefaults(Configuration techtree) {
-
+		String stone = "stoneTools";
+		techtree.getStringList("unlcoks", stone,
+				new String[] { "minecraft:stonePickaxe" }, "test");
 	}
 
 	@EventHandler

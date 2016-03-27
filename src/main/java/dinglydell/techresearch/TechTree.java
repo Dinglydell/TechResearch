@@ -17,7 +17,7 @@ public class TechTree {
 	}
 
 	public static void addHandler(IReplacementHandler handler) {
-
+		handlers.add(handler);
 	}
 
 	public static void replace() {
