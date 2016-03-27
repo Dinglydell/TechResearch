@@ -1,0 +1,16 @@
+[
+{
+  "modid": "TechResearch",
+  "name": "Tech Research",
+  "description": "Researchabubble tech",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Dinglydell"],
+  "credits": "People, probably",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
