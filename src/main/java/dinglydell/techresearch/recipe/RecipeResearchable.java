@@ -69,8 +69,10 @@ public class RecipeResearchable implements IRecipe {
 
 	@Override
 	public ItemStack getCraftingResult(InventoryCrafting craft) {
-		// TODO Auto-generated method stub
-		return null;
+		if (!hasTech(craft)) {
+			return null;
+		}
+		return recipe.getCraftingResult(craft);
 	}
 
 	@Override
