@@ -1,12 +1,58 @@
 package dinglydell.techresearch;
 
-public enum Experiment {
-	fall("falling", 10), pendulum("pendulums", 20);
-	public String name;
-	public int initialValue;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
-	private Experiment(String name, int initialValue) {
+public class Experiment {
+	public static Experiment fall;
+	public static Experiment pendulum;
+	public static Experiment anvil;
+	public static Experiment farming;
+	public static Map<String, Experiment> experiments = new HashMap<String, Experiment>();
+	static {
+		// TODO: have configuration to disable this for custom experiments
+		Map<ResearchType, Double> fallMap = new HashMap<ResearchType, Double>();
+		// fall experiment is multiplied by fall distance - actual values much
+		// larger
+		fallMap.put(ResearchType.physics, 1.0);
+		fall = new Experiment("falling", fallMap);
+
+		Map<ResearchType, Double> pendMap = new HashMap<ResearchType, Double>();
+		pendMap.put(ResearchType.physics, 10.0);
+		// pendMap.put(ResearchType.engineering, 1.0);
+		pendulum = new Experiment("pendulums", pendMap);
+
+		Map<ResearchType, Double> anvilMap = new HashMap<ResearchType, Double>();
+		anvilMap.put(ResearchType.physics, 5.0);
+		anvilMap.put(ResearchType.engineering, 20.0);
+		anvil = new Experiment("anvils", anvilMap);
+
+		Map<ResearchType, Double> farmMap = new HashMap<ResearchType, Double>();
+		farmMap.put(ResearchType.biology, 10.0);
+		farming = new Experiment("farming", farmMap);
+
+	}
+	public String name;
+
+	public Map<ResearchType, Double> initialValues;
+
+	public Experiment(String name) {
 		this.name = name;
-		this.initialValue = initialValue;
+		if (experiments.containsKey(this.name)) {
+			throw new IllegalArgumentException(this.name + " already exists.");
+		}
+		experiments.put(this.name, this);
+	}
+
+	public Experiment(String name, Map<ResearchType, Double> initialValues) {
+		this(name);
+		this.initialValues = initialValues;
+		for (Entry<ResearchType, Double> value : initialValues.entrySet()) {
+			if (!value.getKey().isBaseType()) {
+				throw new IllegalArgumentException(value.getKey()
+						+ " is not a base type!");
+			}
+		}
 	}
 }

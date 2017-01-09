@@ -5,6 +5,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.entity.player.AnvilRepairEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import scala.util.Random;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -17,9 +18,10 @@ public class PlayerEventHandler {
 				.get(clone.entityPlayer);
 		PlayerTechDataExtendedProps ptdepOld = PlayerTechDataExtendedProps
 				.get(clone.original);
-		ptdepNew.biology = ptdepOld.biology;
-		ptdepNew.chemistry = ptdepOld.chemistry;
-		ptdepNew.physics = ptdepOld.physics;
+		ptdepNew.researchPoints = ptdepOld.researchPoints;
+		// ptdepNew.biology = ptdepOld.biology;
+		// ptdepNew.engineering = ptdepOld.engineering;
+		// ptdepNew.physics = ptdepOld.physics;
 		ptdepNew.setNodes(ptdepOld.getNodes());
 		ptdepNew.setExperiments(ptdepOld.getExperiments());
 	}
@@ -55,11 +57,20 @@ public class PlayerEventHandler {
 				Random rnd = new Random();
 				if (rnd.nextDouble() < event.distance / 10) {
 					PlayerTechDataExtendedProps.get(player)
-							.addPhysics(Experiment.fall,
+							.addResearchPoints(Experiment.fall,
 									Math.min(Math.floor(event.distance), 20));
 				}
 
 			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onPlayerAnvil(AnvilRepairEvent event) {
+		if (!event.entity.worldObj.isRemote) {
+			EntityPlayer player = (EntityPlayer) event.entity;
+			PlayerTechDataExtendedProps.get(player)
+					.addResearchPoints(Experiment.anvil);
 		}
 	}
 

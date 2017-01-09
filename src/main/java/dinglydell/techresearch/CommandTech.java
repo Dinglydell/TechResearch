@@ -1,9 +1,8 @@
 package dinglydell.techresearch;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.function.Predicate;
 
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
@@ -53,12 +52,25 @@ public class CommandTech implements ICommand {
 							"Your tech data has been reset."));
 					break;
 				case "view":
-					sender.addChatMessage(new ChatComponentText("Biology: "
-							+ ptdep.biology));
-					sender.addChatMessage(new ChatComponentText("Chemistry: "
-							+ ptdep.chemistry));
-					sender.addChatMessage(new ChatComponentText("Physics: "
-							+ ptdep.physics));
+					for (ResearchType rt : ResearchType.getTypes().values()) {
+						if (rt.isBaseDiscoveredType(ptdep)) {
+							String displayName = rt.name;
+							if (rt.isOtherType(ptdep)) {
+								displayName = "other " + displayName;
+							}
+							sender.addChatMessage(new ChatComponentText(
+									displayName
+											+ ": "
+											+ ptdep.getDisplayResearchPoints(rt.name)));
+						}
+					}
+					// sender.addChatMessage(new ChatComponentText("Biology: "
+					// + ptdep.getResearchPoints("biology")));
+					// sender.addChatMessage(new
+					// ChatComponentText("Engineering: "
+					// + ptdep.getResearchPoints("engineering")));
+					// sender.addChatMessage(new ChatComponentText("Physics: "
+					// + ptdep.getResearchPoints("physics")));
 					break;
 
 				case "add":
@@ -70,13 +82,16 @@ public class CommandTech implements ICommand {
 					boolean success = true;
 					switch (args[1]) {
 						case "biology":
-							ptdep.biology += Double.parseDouble(args[2]);
+							ptdep.forceAddResearchPoints("biology",
+									Double.parseDouble(args[2]));
 							break;
-						case "chemistry":
-							ptdep.chemistry += Double.parseDouble(args[2]);
+						case "engineering":
+							ptdep.forceAddResearchPoints("engineering",
+									Double.parseDouble(args[2]));
 							break;
 						case "physics":
-							ptdep.physics += Double.parseDouble(args[2]);
+							ptdep.forceAddResearchPoints("phyisics",
+									Double.parseDouble(args[2]));
 							break;
 						default:
 							success = false;
@@ -91,90 +106,61 @@ public class CommandTech implements ICommand {
 					break;
 
 				case "spend":
-					if (args.length < 3
-							|| !(args[1].equals("biology")
-									|| args[1].equals("chemistry") || args[1]
-										.equals("physics"))) {
+					if (args.length < 4
+							|| !ResearchType.getTypes().containsKey(args[1])) {
 						sender.addChatMessage(new ChatComponentText(
 								getCommandUsage(sender)));
 						return;
 					}
 
-					try {
-						// I don't know how I feel about this
-						Field type = TechNode.class.getDeclaredField(args[1]);
+					double spendValue = Double.parseDouble(args[2]);
 
-						Field playerType = PlayerTechDataExtendedProps.class
-								.getDeclaredField(args[1]);
-						double playerValue = playerType.getDouble(ptdep);
-						double spendValue = Double.parseDouble(args[2]);
-						if (playerValue < spendValue) {
-							sender.addChatMessage(new ChatComponentText(
-									"You don't have enough " + args[1]
-											+ " points."));
-							return;
-						}
-						List<TechNode> nodes = new ArrayList<TechNode>(
-								TechTree.nodes.values());
-						nodes.removeIf(new Predicate<TechNode>() {
-							@Override
-							public boolean test(TechNode tn) {
-								if (ptdep.hasCompleted(tn)) {
-									return true;
-								}
-								for (String tid : tn.requiresAll) {
-									if (!ptdep.hasCompleted(tid)) {
-										return true;
-									}
-								}
-								for (String tid : tn.requiresAny) {
-									if (ptdep.hasCompleted(tid)) {
-										return false;
-									}
-								}
-								return false;
-							}
-						});
-						float totalWeight = 0;
-						for (TechNode tn : nodes) {
-							totalWeight += type.getFloat(tn);
-							// switch (args[1]) {
-							// case "biology":
-							// totalWeight += tn.biology;
-							// break;
-							// case "chemistry":
-							// totalWeight += tn.chemistry;
-							// break;
-							// case "physics":
-							// totalWeight += tn.physics;
-							// break;
-							// }
-						}
+					if (ptdep
+							.spendResearchPoints(ResearchType.getType(args[1]),
+									spendValue,
+									false) < spendValue) {
+						sender.addChatMessage(new ChatComponentText(
+								"You don't have enough " + args[1] + " points."));
+						return;
+					}
+					TechNode tn = ptdep.getAvailableNode(args[3]);
 
-						if (totalWeight > 0) {
-							double rnd = Math.random() * totalWeight;
-
-							int i;
-							for (i = 0; rnd >= 0; i++) {
-								TechNode tn = nodes.get(i);
-								rnd -= type.getFloat(tn);
-
-							}
-							if (rnd == 0) {
-								i = 1;
-							}
-							TechNode tn = nodes.get(i - 1);
-
-							ptdep.addProgress(tn, spendValue);
-							playerType.setDouble(ptdep, playerValue
-									- spendValue);
-						}
-
-					} catch (Exception e) {
-						e.printStackTrace();
+					if (tn == null) {
+						sender.addChatMessage(new ChatComponentText(
+								"Not an available tech!"));
+						return;
 					}
 
+					spendValue = ptdep.addProgress(tn,
+							ResearchType.getType(args[1]),
+							spendValue);
+					ptdep.spendResearchPoints(ResearchType.getType(args[1]),
+							spendValue,
+							true);
+
 					break;
+				case "options":
+					Collection<TechNode> nodes = ptdep.getAvailableNodes();
+					sender.addChatMessage(new ChatComponentText(
+							"Available nodes:"));
+					for (TechNode node : nodes) {
+						if (ptdep.hasProgress(node)) {
+							sender.addChatMessage(new ChatComponentText("-"
+									+ node.id
+									+ " ("
+									+ node.costsAsString(ptdep
+											.getProgress(node)) + ")"));
+						} else {
+							sender.addChatMessage(new ChatComponentText("-"
+									+ node.id + " (" + node.costsAsString()
+									+ ")"));
+						}
+					}
+					break;
+				case "regenerate":
+					ptdep.regenerateTechChoices();
+					break;
+
 				default:
 					sender.addChatMessage(new ChatComponentText(
 							"Unknown argument " + args[0]));
@@ -203,7 +189,7 @@ public class CommandTech implements ICommand {
 		} else if (args.length == 2) {
 			List<String> list = new ArrayList<String>();
 			list.add("biology");
-			list.add("chemistry");
+			list.add("engineering");
 			list.add("physics");
 			return list;
 		}

@@ -1,8 +1,12 @@
 package dinglydell.techresearch;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Predicate;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,14 +18,17 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
+import scala.actors.threadpool.Arrays;
 import cpw.mods.fml.common.registry.GameData;
 
 public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 
 	public static final String TECHDATA = "techData";
 	public static final String BIOLOGY = "biology";
-	public static final String CHEMISTRY = "chemistry";
+	public static final String ENGINEERING = "engineering";
 	public static final String PHYSICS = "physics";
+	public static final String RESEARCH_POINTS = "researchPoints";
+	public static final String RESEARCH_NAME = "name";
 	public static final String TECH_NODES = "techNodes";
 	public static final String EXPERIMENTS = "experiments";
 	public static final String EXPERIMENT = "experiment";
@@ -29,10 +36,12 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 
 	protected final EntityPlayer player;
 
-	protected double biology = 0;
-	protected double chemistry = 0;
-	protected double physics = 0;
+	protected Map<ResearchType, Double> researchPoints = new HashMap<ResearchType, Double>();
+	// protected double biology = 0;
+	// protected double engineering = 0;
+	// protected double physics = 0;
 	private Map<TechNode, NodeProgress> nodes = new HashMap<TechNode, NodeProgress>();
+	private Map<String, TechNode> availableNodes = new HashMap<String, TechNode>();
 	private Map<Experiment, Integer> experiments = new HashMap<Experiment, Integer>();
 
 	public PlayerTechDataExtendedProps(EntityPlayer player) {
@@ -43,30 +52,47 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 	public void saveNBTData(NBTTagCompound nbt) {
 		NBTTagCompound techData = new NBTTagCompound();
 		nbt.setTag(TECHDATA, techData);
-		techData.setDouble(BIOLOGY, biology);
-		techData.setDouble(CHEMISTRY, chemistry);
-		techData.setDouble(PHYSICS, physics);
+		NBTTagList rsrchPts = new NBTTagList();
+		techData.setTag(RESEARCH_POINTS, rsrchPts);
+		for (Entry<ResearchType, Double> rsrch : researchPoints.entrySet()) {
+			NBTTagCompound rTag = new NBTTagCompound();
+			rTag.setString(RESEARCH_NAME, rsrch.getKey().name);
+			rTag.setDouble(QUANTITY, rsrch.getValue());
+			rsrchPts.appendTag(rTag);
+		}
+		// techData.s(BIOLOGY, biology);
+		// techData.setDouble(ENGINEERING, engineering);
+		// techData.setDouble(PHYSICS, physics);
+
 		NBTTagList techNodes = new NBTTagList();
 		techData.setTag(TECH_NODES, techNodes);
 		for (Entry<TechNode, NodeProgress> np : getNodes().entrySet()) {
 			techNodes.appendTag(np.getValue().getTag());
 		}
 		NBTTagList exps = new NBTTagList();
-		techData.setTag(EXPERIMENTS, techNodes);
+		techData.setTag(EXPERIMENTS, exps);
 		for (Entry<Experiment, Integer> exp : experiments.entrySet()) {
 			NBTTagCompound expTag = new NBTTagCompound();
-			expTag.setInteger(EXPERIMENT, exp.getKey().ordinal());
+			expTag.setString(EXPERIMENT, exp.getKey().name);
 			expTag.setInteger(QUANTITY, exp.getValue());
-			techNodes.appendTag(expTag);
+			exps.appendTag(expTag);
 		}
 	}
 
 	@Override
 	public void loadNBTData(NBTTagCompound nbt) {
 		NBTTagCompound techData = nbt.getCompoundTag(TECHDATA);
-		biology = techData.getDouble(BIOLOGY);
-		chemistry = techData.getDouble(CHEMISTRY);
-		physics = techData.getDouble(PHYSICS);
+		// biology = techData.getDouble(BIOLOGY);
+		// engineering = techData.getDouble(ENGINEERING);
+		// physics = techData.getDouble(PHYSICS);
+
+		researchPoints.clear();
+		NBTTagList rsrchPts = techData.getTagList(RESEARCH_POINTS, 10);
+		for (int i = 0; i < rsrchPts.tagCount(); i++) {
+			NBTTagCompound rTag = rsrchPts.getCompoundTagAt(i);
+			researchPoints.put(ResearchType.getType(rTag
+					.getString(RESEARCH_NAME)), rTag.getDouble(QUANTITY));
+		}
 		getNodes().clear();
 		NBTTagList techNodes = techData.getTagList(TECH_NODES, 10);
 		for (int i = 0; i < techNodes.tagCount(); i++) {
@@ -77,14 +103,90 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 		NBTTagList exps = techData.getTagList(EXPERIMENTS, 10);
 		for (int i = 0; i < exps.tagCount(); i++) {
 			NBTTagCompound expTag = exps.getCompoundTagAt(i);
-			experiments.put(Experiment.values()[expTag.getInteger(EXPERIMENT)],
-					expTag.getInteger(QUANTITY));
+			experiments.put(Experiment.experiments.get(expTag
+					.getString(EXPERIMENT)), expTag.getInteger(QUANTITY));
 		}
 	}
 
 	@Override
 	public void init(Entity ent, World world) {
+		if (availableNodes.isEmpty()) {
+			regenerateTechChoices();
 
+		}
+	}
+
+	public void regenerateTechChoices() {
+		availableNodes.clear();
+		List<TechNode> nodes = new ArrayList<TechNode>(TechTree.nodes.values());
+		nodes.removeIf(new Predicate<TechNode>() {
+			@Override
+			public boolean test(TechNode tn) {
+				if (hasCompleted(tn)) {
+					return true;
+				}
+				for (ResearchType rt : tn.costs.keySet()) {
+					if (!hasDiscovered(rt)) {
+						return true;
+					}
+				}
+				for (String tid : tn.requiresAll) {
+					if (!hasCompleted(tid)) {
+						return true;
+					}
+				}
+				for (String tid : tn.requiresAny) {
+					if (hasCompleted(tid)) {
+						return false;
+					}
+				}
+				return false;
+			}
+		});
+		float totalWeight = 0;
+		// TODO: better varying tech weight
+		Map<TechNode, Double> weights = new HashMap<TechNode, Double>();
+		for (TechNode tn : nodes) {
+			int numCosts = tn.costs.size();
+			double weight = 0;
+			for (Entry<ResearchType, Double> cost : tn.costs.entrySet()) {
+
+				weight += getResearchPoints(cost.getKey())
+						/ (cost.getValue() * tn.costs.size());
+			}
+			totalWeight += weight;
+			weights.put(tn, weight);
+		}
+		if (totalWeight > 0) {
+
+			for (int i = 0; i < 3; i++) {
+				if (nodes.size() > 0) {
+					TechNode node = generateNode(totalWeight, nodes, weights);
+					totalWeight -= weights.get(node);
+					nodes.remove(node);
+					availableNodes.put(node.id, node);
+				}
+			}
+
+		}
+
+	}
+
+	private TechNode generateNode(float totalWeight,
+			List<TechNode> nodes,
+			Map<TechNode, Double> weights) {
+		double rnd = Math.random() * totalWeight;
+		int i;
+		for (i = 0; rnd >= 0 && i < nodes.size(); i++) {
+			TechNode tn = nodes.get(i);
+			rnd -= weights.get(tn);
+
+		}
+		if (rnd == 0) {
+			i = 1;
+		}
+		TechNode tn = nodes.get(i - 1);
+		return tn;
 	}
 
 	public static final PlayerTechDataExtendedProps get(EntityPlayer player) {
@@ -96,18 +198,33 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 		return nodes;
 	}
 
-	public void addProgress(TechNode tn, double spendValue) {
-		spendValue /= 50;
+	public double addProgress(TechNode tn, ResearchType type, double spendValue) {
+		// spendValue /= 50;
+
 		if (nodes.containsKey(tn)) {
-			nodes.get(tn).progress += spendValue;
+			if (nodes.get(tn).progressLeft(type) <= 0) {
+				player.addChatMessage(new ChatComponentText(
+						"Already invested maximum amount of " + type.name
+								+ " into " + tn.id + "."));
+			}
+
+			nodes.get(tn).progress.put(type, nodes.get(tn).getProgress(type)
+					+ spendValue);
 		} else {
-			nodes.put(tn, new NodeProgress(tn, spendValue));
+			nodes.put(tn, new NodeProgress(tn, type, spendValue));
 		}
-		player.addChatMessage(new ChatComponentText("Points spent towards "
-				+ tn.id + " (" + (100 * nodes.get(tn).progress) + "%)"));
+		if (nodes.get(tn).progressLeft(type) < 0) {
+			spendValue += nodes.get(tn).progressLeft(type);
+			nodes.get(tn).progress
+					.put(type, nodes.get(tn).node.costs.get(type));
+		}
+		player.addChatMessage(new ChatComponentText(spendValue
+				+ " points spent towards " + tn.id + " ("
+				+ (100 * nodes.get(tn).getTotalProgress()) + "%)"));
 		if (nodes.get(tn).isComplete()) {
 			player.addChatMessage(new ChatComponentText("You have completed "
 					+ tn.id));
+
 			for (String item : tn.unlocks) {
 				Item it = GameData.getItemRegistry().getObject(item);
 				player.addChatMessage(new ChatComponentText(
@@ -116,8 +233,18 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 										.getUnlocalizedName())));
 
 			}
+			for (String subType : tn.subTypeUnlocks) {
+				player.addChatMessage(new ChatComponentText(
+						"You now know that some "
+								+ ResearchType.getType(subType).getParentType().name
+								+ " can be specialised as " + subType));
+			}
+
+			regenerateTechChoices();
+
 		}
 		sendPacket();
+		return spendValue;
 	}
 
 	public boolean hasCompleted(TechNode tn) {
@@ -127,9 +254,8 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 	public void reset() {
 		nodes.clear();
 		experiments.clear();
-		biology = 0;
-		chemistry = 0;
-		physics = 0;
+		researchPoints.clear();
+
 		sendPacket();
 
 	}
@@ -154,32 +280,33 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 		return hasCompleted(TechTree.nodes.get(tid));
 	}
 
-	public void addPhysics(Experiment exp, double multiplier) {
-		double amt = multiplier;
+	private double addResearch(ResearchType researchType,
+			Experiment exp,
+			double amount) {
+		double amt = amount;
 		if (experiments.containsKey(exp)) {
 			int q = experiments.get(exp);
 			amt /= q;
 			amt = roundToTenth(amt);
 			experiments.put(exp, q + 1);
-			if (amt == 0 && roundToTenth(multiplier / (q - 1)) > 0) {
+			if (amt == 0 && roundToTenth(amount / (q - 1)) > 0) {
 				player.addChatMessage(new ChatComponentText(
-						"You can no longer gain physics knowledge by experimenting with "
+						"You can no longer gain " + researchType.name
+								+ " knowledge by experimenting with "
 								+ exp.name + " here."));
 			}
 		} else {
 			experiments.put(exp, 1);
 		}
-		if (amt > 0) {
-			physics += amt;
-			player.addChatMessage(new ChatComponentText(
-					"Your experiments with " + exp.name + " have earned you "
-							+ amt + " physics research."));
-			sendPacket();
+		if (amt == 0) {
+			return 0;
 		}
-	}
 
-	public void addPhysics(Experiment exp) {
-		addPhysics(exp, exp.initialValue);
+		player.addChatMessage(new ChatComponentText("Your experiments with "
+				+ exp.name + " have earned you " + amt + " "
+				+ researchType.name + " research."));
+		return amt;
+
 	}
 
 	public Map<Experiment, Integer> getExperiments() {
@@ -190,4 +317,114 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 		this.experiments = experiments;
 
 	}
+
+	public void addResearchPoints(Experiment exp, double multiplier) {
+		for (Entry<ResearchType, Double> value : exp.initialValues.entrySet()) {
+			researchPoints.put(value.getKey(),
+					getResearchPoints(value.getKey())
+							+ addResearch(value.getKey(), exp, value.getValue()
+									* multiplier));
+		}
+
+		sendPacket();
+	}
+
+	public void addResearchPoints(Experiment exp) {
+		addResearchPoints(exp, 1.0);
+	}
+
+	/** This is cheating. */
+	public void forceAddResearchPoints(String type, double amount) {
+		researchPoints.put(ResearchType.getType(type), getResearchPoints(type)
+				+ amount);
+	}
+
+	public double getResearchPoints(ResearchType type) {
+		return type.getValue(this);
+	}
+
+	public double getDisplayResearchPoints(String name) {
+		return Math
+				.round(ResearchType.getType(name).getDisplayValue(this) * 100) / 100.0;
+	}
+
+	public double getResearchPoints(String type) {
+		return getResearchPoints(ResearchType.getType(type));
+	}
+
+	public boolean hasDiscovered(ResearchType researchType) {
+		if (researchType.isStartType()) {
+			return true;
+		}
+		for (Entry<TechNode, NodeProgress> node : this.nodes.entrySet()) {
+			if (this.hasCompleted(node.getKey())) {
+				List<String> unlocks = Arrays
+						.asList(node.getKey().subTypeUnlocks);
+				if (unlocks.contains(researchType.name)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public double spendResearchPoints(ResearchType type,
+			double amount,
+			boolean doSpend) {
+		if (type.isBaseType()) {
+			double value = Math.min(amount, getResearchPoints(type));
+			if (doSpend) {
+				researchPoints.put(type, getResearchPoints(type) - value);
+			}
+			return value;
+
+		}
+
+		if (getResearchPoints(type) < amount) {
+			return 0;
+		}
+		if (doSpend) {
+			spendChildren(type.getChildren(), amount);
+		}
+		return amount;
+
+	}
+
+	private void spendChildren(List<ResearchType> children, double amount) {
+		double spendAmt = amount / children.size();
+		for (ResearchType child : children) {
+
+			double amt = spendResearchPoints(child, spendAmt, false);
+			if (amt < spendAmt) {
+				List<ResearchType> newChildren = new ArrayList<ResearchType>(
+						children);
+				newChildren.remove(child);
+				spendChildren(newChildren, spendAmt);
+			} else {
+				spendResearchPoints(child, spendAmt, true);
+			}
+		}
+
+	}
+
+	public TechNode getAvailableNode(String node) {
+
+		return availableNodes.getOrDefault(node, null);
+	}
+
+	public Collection<TechNode> getAvailableNodes() {
+		if (availableNodes.size() < 3) {
+			regenerateTechChoices();
+		}
+		return availableNodes.values();
+	}
+
+	public boolean hasProgress(TechNode node) {
+		return nodes.containsKey(node);
+	}
+
+	public NodeProgress getProgress(TechNode node) {
+		return nodes.get(node);
+	}
+
 }

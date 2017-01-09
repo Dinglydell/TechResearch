@@ -26,7 +26,7 @@ public class BlockPendulum extends Block {
 			float p_149727_9_) {
 		if (!world.isRemote) {
 			PlayerTechDataExtendedProps.get(player)
-					.addPhysics(Experiment.pendulum);
+					.addResearchPoints(Experiment.pendulum);
 		}
 		return false;
 	}
