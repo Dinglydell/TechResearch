@@ -1,4 +1,4 @@
-package dinglydell.techresearch;
+package dinglydell.techresearch.event;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -9,6 +9,8 @@ import net.minecraftforge.event.entity.player.AnvilRepairEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import scala.util.Random;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import dinglydell.techresearch.Experiment;
+import dinglydell.techresearch.PlayerTechDataExtendedProps;
 
 public class PlayerEventHandler {
 

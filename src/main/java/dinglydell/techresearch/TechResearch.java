@@ -22,6 +22,10 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import dinglydell.techresearch.block.BlockPendulum;
 import dinglydell.techresearch.block.TRBlocks;
+import dinglydell.techresearch.event.PlayerEventHandler;
+import dinglydell.techresearch.event.TechKeyBindings;
+import dinglydell.techresearch.network.PacketTechHandler;
+import dinglydell.techresearch.network.PacketTechResearch;
 import dinglydell.techresearch.recipe.CraftingReplacementHandler;
 
 @Mod(modid = TechResearch.MODID, version = TechResearch.VERSION)
@@ -36,7 +40,7 @@ public class TechResearch {
 		registerEventHandlers();
 
 		registerPacketHandlers();
-
+		TechKeyBindings.RegisterKeyBindings();
 		readConfig(event);
 
 		registerBlocks();
@@ -191,7 +195,7 @@ public class TechResearch {
 						"minecraft:iron_sword",
 						"minecraft:iron_shovel",
 						"minecraft:iron_hoe" },
-				addEngineering(createTechMap(), 20),
+				addSmithing(addMetallurgy(createTechMap(), 10), 15),
 				new String[] { "stonetools", "furnace" });
 
 		addDefaultNode(techtree,
@@ -272,6 +276,18 @@ public class TechResearch {
 		// new String[] { ResearchType.botany.name },
 		// addPhysics(createTechMap(), 20));
 
+	}
+
+	private Map<ResearchType, Double> addSmithing(Map<ResearchType, Double> map,
+			double amt) {
+		map.put(ResearchType.smithing, amt);
+		return map;
+	}
+
+	private Map<ResearchType, Double> addMetallurgy(Map<ResearchType, Double> map,
+			double amt) {
+		map.put(ResearchType.metallurgy, amt);
+		return map;
 	}
 
 	private Map<ResearchType, Double> createTechMap() {

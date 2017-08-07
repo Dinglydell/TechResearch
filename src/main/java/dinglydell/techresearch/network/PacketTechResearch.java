@@ -1,9 +1,10 @@
-package dinglydell.techresearch;
+package dinglydell.techresearch.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import dinglydell.techresearch.PlayerTechDataExtendedProps;
 
 public class PacketTechResearch implements IMessage {
 

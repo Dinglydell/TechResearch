@@ -20,6 +20,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
 import scala.actors.threadpool.Arrays;
 import cpw.mods.fml.common.registry.GameData;
+import dinglydell.techresearch.network.PacketTechResearch;
 
 public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 
@@ -36,7 +37,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 
 	protected final EntityPlayer player;
 
-	protected Map<ResearchType, Double> researchPoints = new HashMap<ResearchType, Double>();
+	public Map<ResearchType, Double> researchPoints = new HashMap<ResearchType, Double>();
 	// protected double biology = 0;
 	// protected double engineering = 0;
 	// protected double physics = 0;
@@ -198,28 +199,36 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 		return nodes;
 	}
 
-	public double addProgress(TechNode tn, ResearchType type, double spendValue) {
+	public double addProgress(TechNode tn,
+			ResearchType spendType,
+			double spendValue) {
 		// spendValue /= 50;
-
-		if (nodes.containsKey(tn)) {
-			if (nodes.get(tn).progressLeft(type) <= 0) {
-				player.addChatMessage(new ChatComponentText(
-						"Already invested maximum amount of " + type.name
-								+ " into " + tn.id + "."));
-			}
-
-			nodes.get(tn).progress.put(type, nodes.get(tn).getProgress(type)
-					+ spendValue);
-		} else {
+		ResearchType type = spendType;
+		while (!tn.costs.containsKey(type) && type != null) {
+			type = type.getParentType();
+		}
+		if (type == null) {
+			player.addChatMessage(new ChatComponentText(tn.id
+					+ " does not require any " + spendType.name + "."));
+		}
+		if (!nodes.containsKey(tn)) {
 			nodes.put(tn, new NodeProgress(tn, type, spendValue));
 		}
+		if (nodes.get(tn).progressLeft(type) <= 0) {
+			player.addChatMessage(new ChatComponentText(
+					"Already invested maximum amount of " + type.name
+							+ " into " + tn.id + "."));
+		}
+
+		nodes.get(tn).progress.put(type, nodes.get(tn).getProgress(type)
+				+ spendValue);
 		if (nodes.get(tn).progressLeft(type) < 0) {
 			spendValue += nodes.get(tn).progressLeft(type);
 			nodes.get(tn).progress
 					.put(type, nodes.get(tn).node.costs.get(type));
 		}
-		player.addChatMessage(new ChatComponentText(spendValue
-				+ " points spent towards " + tn.id + " ("
+		player.addChatMessage(new ChatComponentText(spendValue + " "
+				+ type.name + " points spent towards " + tn.id + " ("
 				+ (100 * nodes.get(tn).getTotalProgress()) + "%)"));
 		if (nodes.get(tn).isComplete()) {
 			player.addChatMessage(new ChatComponentText("You have completed "
@@ -255,7 +264,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 		nodes.clear();
 		experiments.clear();
 		researchPoints.clear();
-
+		regenerateTechChoices();
 		sendPacket();
 
 	}
@@ -292,8 +301,8 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 			if (amt == 0 && roundToTenth(amount / (q - 1)) > 0) {
 				player.addChatMessage(new ChatComponentText(
 						"You can no longer gain " + researchType.name
-								+ " knowledge by experimenting with "
-								+ exp.name + " here."));
+								+ " knowledge by observing " + exp.name
+								+ " here."));
 			}
 		} else {
 			experiments.put(exp, 1);
@@ -305,7 +314,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 		while (!hasDiscovered(discoveredType)) {
 			discoveredType = discoveredType.getParentType();
 		}
-		player.addChatMessage(new ChatComponentText("Your experiments with "
+		player.addChatMessage(new ChatComponentText("Your observations of "
 				+ exp.name + " have earned you " + amt + " "
 				+ discoveredType.name
 				+ (discoveredType.name.equals("research") ? "" : " research.")));

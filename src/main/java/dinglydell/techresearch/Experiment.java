@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 public class Experiment {
 	public static Experiment fall;
+	public static Experiment mobFall;
 	public static Experiment pendulum;
 	public static Experiment anvil;
 	public static Experiment farming;
@@ -17,6 +18,8 @@ public class Experiment {
 		// larger
 		fallMap.put(ResearchType.motion, 1.0);
 		fall = new Experiment("falling", fallMap);
+
+		mobFall = new Experiment("mobFalling", fallMap);
 
 		Map<ResearchType, Double> pendMap = new HashMap<ResearchType, Double>();
 		pendMap.put(ResearchType.motion, 10.0);

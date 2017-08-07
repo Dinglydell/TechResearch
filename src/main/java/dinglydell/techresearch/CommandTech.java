@@ -48,6 +48,7 @@ public class CommandTech implements ICommand {
 			switch (args[0]) {
 				case "reset":
 					ptdep.reset();
+
 					sender.addChatMessage(new ChatComponentText(
 							"Your tech data has been reset."));
 					break;
@@ -56,6 +57,9 @@ public class CommandTech implements ICommand {
 						if (rt.isBaseDiscoveredType(ptdep)) {
 							String displayName = rt.name;
 							if (rt.isOtherType(ptdep)) {
+								if (ptdep.getDisplayResearchPoints(rt.name) == 0) {
+									continue;
+								}
 								displayName = "other " + displayName;
 							}
 							sender.addChatMessage(new ChatComponentText(
