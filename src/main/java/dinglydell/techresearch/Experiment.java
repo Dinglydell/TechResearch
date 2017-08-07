@@ -15,21 +15,21 @@ public class Experiment {
 		Map<ResearchType, Double> fallMap = new HashMap<ResearchType, Double>();
 		// fall experiment is multiplied by fall distance - actual values much
 		// larger
-		fallMap.put(ResearchType.physics, 1.0);
+		fallMap.put(ResearchType.motion, 1.0);
 		fall = new Experiment("falling", fallMap);
 
 		Map<ResearchType, Double> pendMap = new HashMap<ResearchType, Double>();
-		pendMap.put(ResearchType.physics, 10.0);
+		pendMap.put(ResearchType.motion, 10.0);
 		// pendMap.put(ResearchType.engineering, 1.0);
 		pendulum = new Experiment("pendulums", pendMap);
 
 		Map<ResearchType, Double> anvilMap = new HashMap<ResearchType, Double>();
-		anvilMap.put(ResearchType.physics, 5.0);
-		anvilMap.put(ResearchType.engineering, 20.0);
+		anvilMap.put(ResearchType.metallurgy, 5.0);
+		anvilMap.put(ResearchType.smithing, 20.0);
 		anvil = new Experiment("anvils", anvilMap);
 
 		Map<ResearchType, Double> farmMap = new HashMap<ResearchType, Double>();
-		farmMap.put(ResearchType.biology, 10.0);
+		farmMap.put(ResearchType.botany, 10.0);
 		farming = new Experiment("farming", farmMap);
 
 	}

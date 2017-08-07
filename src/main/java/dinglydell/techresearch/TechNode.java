@@ -15,15 +15,18 @@ public class TechNode {
 	public final String[] requiresAll;
 	public final String[] requiresAny;
 
-	public TechNode(String id, String[] unlocks, String[] subTypeUnlocks,
-			Map<ResearchType, Double> costs, String[] requiresAll,
-			String[] requiresAny) {
+	public TechNodeType type;
+
+	public TechNode(String id, String type, String[] unlocks,
+			String[] subTypeUnlocks, Map<ResearchType, Double> costs,
+			String[] requiresAll, String[] requiresAny) {
 		this.id = id;
 		this.unlocks = unlocks;
 		this.subTypeUnlocks = subTypeUnlocks;
 		this.costs = costs;
 		this.requiresAll = requiresAll;
 		this.requiresAny = requiresAny;
+		this.type = TechNodeType.types.get(type);
 	}
 
 	public String costsAsString() {

@@ -145,15 +145,17 @@ public class CommandTech implements ICommand {
 							"Available nodes:"));
 					for (TechNode node : nodes) {
 						if (ptdep.hasProgress(node)) {
-							sender.addChatMessage(new ChatComponentText("-"
+							sender.addChatMessage(new ChatComponentText("- ["
+									+ node.type.getKey()
+									+ "] "
 									+ node.id
 									+ " ("
 									+ node.costsAsString(ptdep
 											.getProgress(node)) + ")"));
 						} else {
-							sender.addChatMessage(new ChatComponentText("-"
-									+ node.id + " (" + node.costsAsString()
-									+ ")"));
+							sender.addChatMessage(new ChatComponentText("- ["
+									+ node.type.getKey() + "] " + node.id
+									+ " (" + node.costsAsString() + ")"));
 						}
 					}
 					break;

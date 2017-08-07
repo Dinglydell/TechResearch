@@ -301,10 +301,14 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 		if (amt == 0) {
 			return 0;
 		}
-
+		ResearchType discoveredType = researchType;
+		while (!hasDiscovered(discoveredType)) {
+			discoveredType = discoveredType.getParentType();
+		}
 		player.addChatMessage(new ChatComponentText("Your experiments with "
 				+ exp.name + " have earned you " + amt + " "
-				+ researchType.name + " research."));
+				+ discoveredType.name
+				+ (discoveredType.name.equals("research") ? "" : " research.")));
 		return amt;
 
 	}

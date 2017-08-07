@@ -19,12 +19,36 @@ public class ResearchType {
 	/** Base type (for now) */
 	public static ResearchType engineering = new ResearchType("engineering",
 			ResearchType.research);
-	/** Base type (for now) */
+
+	// science
+	/** Splits into motion, electrics */
 	public static ResearchType physics = new ResearchType("physics",
 			ResearchType.science);
-	/** Base type (for now) */
+	/** Splits into botany, zoology */
 	public static ResearchType biology = new ResearchType("biology",
 			ResearchType.science);
+	public static ResearchType materials = new ResearchType("materials",
+			ResearchType.science);
+
+	// engineering
+	public static ResearchType smithing = new ResearchType("smithing",
+			ResearchType.engineering);
+
+	// physics
+	public static ResearchType motion = new ResearchType("motion",
+			ResearchType.physics);
+	public static ResearchType electrics = new ResearchType("electrics",
+			ResearchType.physics);
+
+	// biology
+	public static ResearchType botany = new ResearchType("botany",
+			ResearchType.biology);
+	public static ResearchType zoology = new ResearchType("zoology",
+			ResearchType.biology);
+
+	// materials
+	public static ResearchType metallurgy = new ResearchType("metallurgy",
+			ResearchType.materials);
 
 	public final String name;
 	private ResearchType parentType = null;
@@ -153,5 +177,9 @@ public class ResearchType {
 	public List<ResearchType> getChildren() {
 		return childTypes;
 
+	}
+
+	public boolean hasParentType() {
+		return this.parentType != null;
 	}
 }

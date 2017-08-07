@@ -73,6 +73,11 @@ public class TechResearch {
 					c,
 					new String[] {},
 					"Types of research points discovered by this node");
+			String type = techtree
+					.getString("type",
+							c,
+							"application",
+							"theory or application. Generally theories are prerequisites to application techs which provide something useful.");
 			Map<ResearchType, Double> costs = new HashMap<ResearchType, Double>();
 			for (ResearchType rt : ResearchType.getTypes().values()) {
 				if (techtree.hasKey(c, rt.name)) {
@@ -121,7 +126,7 @@ public class TechResearch {
 					new String[] {},
 					"The node requires any of these nodes to be unlocked");
 
-			TechTree.AddTechNode(new TechNode(c, unlocks, subTypeUnlocks,
+			TechTree.AddTechNode(new TechNode(c, type, unlocks, subTypeUnlocks,
 					costs, requiresAll, requiresAny));
 
 		}
@@ -180,6 +185,7 @@ public class TechResearch {
 
 		addDefaultNode(techtree,
 				"irontools",
+				"application",
 				new String[] { "minecraft:iron_pickaxe",
 						"minecraft:iron_axe",
 						"minecraft:iron_sword",
@@ -195,6 +201,7 @@ public class TechResearch {
 
 		addDefaultNode(techtree,
 				"diamondtools",
+				"application",
 				new String[] { "minecraft:diamond_pickaxe",
 						"minecraft:diamond_axe",
 						"minecraft:diamond_sword",
@@ -203,28 +210,67 @@ public class TechResearch {
 				addEngineering(addPhysics(createTechMap(), 10), 50),
 				new String[] { "irontools" });
 
-		addDefaultNode(techtree,
-				"science",
-				new String[] {},
-				new String[] { "science" },
-				addResearch(createTechMap(), 20));
+		for (Entry<String, ResearchType> type : ResearchType.getTypes()
+				.entrySet()) {
+			if (!type.getValue().hasParentType()) {
+				continue;
+			}
+			Map<ResearchType, Double> map = createTechMap();
+			map.put(type.getValue().getParentType(), 20.0);
+			addDefaultNode(techtree,
+					type.getValue().name,
+					new String[] {},
+					new String[] { type.getValue().name },
+					map);
 
-		addDefaultNode(techtree,
-				"engineering",
-				new String[] {},
-				new String[] { "engineering" },
-				addResearch(createTechMap(), 20));
+		}
 
-		addDefaultNode(techtree,
-				"physics",
-				new String[] {},
-				new String[] { "physics" },
-				addScience(createTechMap(), 25));
-		addDefaultNode(techtree,
-				"biology",
-				new String[] {},
-				new String[] { "biology" },
-				addScience(createTechMap(), 25));
+		// addDefaultNode(techtree,
+		// "engineering",
+		// new String[] {},
+		// new String[] { ResearchType.engineering.name },
+		// addResearch(createTechMap(), 20));
+		// // science
+		// addDefaultNode(techtree,
+		// "physics",
+		// new String[] {},
+		// new String[] { ResearchType.physics.name },
+		// addScience(createTechMap(), 20));
+		// addDefaultNode(techtree,
+		// "biology",
+		// new String[] {},
+		// new String[] { ResearchType.biology.name },
+		// addScience(createTechMap(), 20));
+		// addDefaultNode(techtree,
+		// "materials",
+		// new String[] {},
+		// new String[] { ResearchType.materials.name },
+		// addScience(createTechMap(), 20));
+		// // engineering
+		// addDefaultNode(techtree,
+		// "smithing",
+		// new String[] {},
+		// new String[] { ResearchType.smithing.name },
+		// addEngineering(createTechMap(), 20));
+		//
+		// //physics
+		// addDefaultNode(techtree,
+		// "motion",
+		// new String[] {},
+		// new String[] { ResearchType.motion.name },
+		// addPhysics(createTechMap(), 20));
+		// addDefaultNode(techtree,
+		// "electrics",
+		// new String[] {},
+		// new String[] { ResearchType.electrics.name },
+		// addPhysics(createTechMap(), 20));
+		//
+		// //biology
+		// addDefaultNode(techtree,
+		// "botany",
+		// new String[] {},
+		// new String[] { ResearchType.botany.name },
+		// addPhysics(createTechMap(), 20));
 
 	}
 
@@ -259,9 +305,22 @@ public class TechResearch {
 
 	private void addDefaultNode(Configuration techtree,
 			String id,
+			String type,
 			String[] unlocks,
 			Map<ResearchType, Double> costs) {
-		addDefaultNode(techtree, id, unlocks, costs, new String[] {});
+		addDefaultNode(techtree, id, type, unlocks, costs, new String[] {});
+	}
+
+	private void addDefaultNode(Configuration techtree,
+			String id,
+			String[] unlocks,
+			Map<ResearchType, Double> costs) {
+		addDefaultNode(techtree,
+				id,
+				"application",
+				unlocks,
+				costs,
+				new String[] {});
 	}
 
 	private void addDefaultNode(Configuration techtree,
@@ -271,6 +330,7 @@ public class TechResearch {
 			Map<ResearchType, Double> costs) {
 		addDefaultNode(techtree,
 				id,
+				"theory",
 				unlocks,
 				subTypesUnlocks,
 				costs,
@@ -281,10 +341,12 @@ public class TechResearch {
 
 	private void addDefaultNode(Configuration techtree,
 			String id,
+			String type,
 			String[] unlocks,
 			Map<ResearchType, Double> costs,
 			String[] requiresAll) {
 		addDefaultNode(techtree,
+				type,
 				id,
 				unlocks,
 				costs,
@@ -295,11 +357,13 @@ public class TechResearch {
 
 	private void addDefaultNode(Configuration techtree,
 			String id,
+			String type,
 			String[] unlocks,
 			Map<ResearchType, Double> costs,
 			String[] requiresAll,
 			String[] requiresAny) {
 		addDefaultNode(techtree,
+				type,
 				id,
 				unlocks,
 				new String[] {},
@@ -310,6 +374,7 @@ public class TechResearch {
 
 	private void addDefaultNode(Configuration techtree,
 			String id,
+			String type,
 			String[] unlocks,
 			String[] subTypeUnlocks,
 			Map<ResearchType, Double> costs,
@@ -329,6 +394,7 @@ public class TechResearch {
 		}
 		// getPositiveFloat(techtree, "engineering", id, engineering);
 		// getPositiveFloat(techtree, "physics", id, physics);
+		techtree.getString("type", id, type, "");
 		techtree.getStringList("requiresAll", id, requiresAll, "");
 		techtree.getStringList("requiresAny", id, requiresAny, "");
 	}
