@@ -1,0 +1,26 @@
+gui.techresearch.other=Other
+
+research.techresearch.research=Research
+research.techresearch.science=Science
+research.techresearch.engineering=Engineering
+
+research.techresearch.physics=Physics
+research.techresearch.biology=Biology
+research.techresearch.materials=Materials Science
+
+research.techresearch.smithing=Smithing
+
+research.techresearch.motion=Motion
+research.techresearch.electrics=Electrics
+
+research.techresearch.botany=Botany
+research.techresearch.zoology=Zoology
+
+research.techresearch.metallurgy=Metallurgy
+
+gui.techresearch.techtype.theory=Theory
+gui.techresearch.techtype.application=Application
+
+tech.techresearch.stonetools=Stone Tools
+tech.techresearch.physics=Physics
+tech.techresearch.engineering=Engineering

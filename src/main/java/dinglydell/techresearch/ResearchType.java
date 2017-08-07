@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.util.StatCollector;
+
 public class ResearchType {
 	private static Map<String, ResearchType> researchTypes = new HashMap<String, ResearchType>();
 	/**
@@ -71,6 +73,11 @@ public class ResearchType {
 
 	protected void addChild(ResearchType child) {
 		childTypes.add(child);
+
+	}
+
+	public String getDisplayName() {
+		return StatCollector.translateToLocal("research.techresearch." + name);
 
 	}
 

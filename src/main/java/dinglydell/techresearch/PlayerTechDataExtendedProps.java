@@ -14,6 +14,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -34,6 +35,8 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 	public static final String EXPERIMENTS = "experiments";
 	public static final String EXPERIMENT = "experiment";
 	public static final String QUANTITY = "quantity";
+	public static final String AVAILABLE_NODES = "available";
+	public static final String AVAILABLE_NODE = "node";
 
 	protected final EntityPlayer player;
 
@@ -78,6 +81,16 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 			expTag.setInteger(QUANTITY, exp.getValue());
 			exps.appendTag(expTag);
 		}
+
+		// available nodes
+		NBTTagList avNodes = new NBTTagList();
+		for (Entry<String, TechNode> node : availableNodes.entrySet()) {
+			NBTTagCompound nodeTag = new NBTTagCompound();
+
+			// nodeTag.setString(AVAILABLE_NODE, node.getValue().id);
+			avNodes.appendTag(new NBTTagString(node.getValue().id));
+		}
+		nbt.setTag(AVAILABLE_NODES, avNodes);
 	}
 
 	@Override
@@ -106,6 +119,14 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 			NBTTagCompound expTag = exps.getCompoundTagAt(i);
 			experiments.put(Experiment.experiments.get(expTag
 					.getString(EXPERIMENT)), expTag.getInteger(QUANTITY));
+		}
+
+		// available nodes
+		NBTTagList avNodes = techData.getTagList(AVAILABLE_NODES, 10);
+		availableNodes.clear();
+		for (int i = 0; i < avNodes.tagCount(); i++) {
+			String id = avNodes.getStringTagAt(i);
+			availableNodes.put(id, TechTree.nodes.get(id));
 		}
 	}
 
@@ -170,7 +191,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 			}
 
 		}
-
+		sendPacket();
 	}
 
 	private TechNode generateNode(float totalWeight,

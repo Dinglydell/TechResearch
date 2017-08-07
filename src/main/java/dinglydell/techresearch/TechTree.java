@@ -8,7 +8,7 @@ import java.util.Map;
 import dinglydell.techresearch.recipe.IReplacementHandler;
 
 public class TechTree {
-	static Map<String, TechNode> nodes = new HashMap<String, TechNode>();
+	public static Map<String, TechNode> nodes = new HashMap<String, TechNode>();
 
 	static List<IReplacementHandler> handlers = new ArrayList<IReplacementHandler>();
 

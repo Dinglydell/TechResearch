@@ -1,5 +1,6 @@
 package dinglydell.techresearch.event;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 
 import org.lwjgl.input.Keyboard;
@@ -35,11 +36,17 @@ public class TechKeyBindings {
 		// appropriate action
 		if (openTable.isPressed()) {
 			// DEBUG
-			System.out.println("Key binding =" + openTable.getKeyDescription());
+			System.out
+					.println("Key binding = " + openTable.getKeyDescription());
 
 			// do stuff for this key binding here
 			// remember you may need to send packet to server
-			GuiResearch.openGui();
+			if (Minecraft.getMinecraft().currentScreen instanceof GuiResearch) {
+				Minecraft.getMinecraft().thePlayer.closeScreen();
+			} else {
+				GuiResearch.openGui();
+			}
+
 		}
 
 	}

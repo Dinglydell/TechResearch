@@ -8,6 +8,7 @@ import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 public class CommandTech implements ICommand {
@@ -55,12 +56,17 @@ public class CommandTech implements ICommand {
 				case "view":
 					for (ResearchType rt : ResearchType.getTypes().values()) {
 						if (rt.isBaseDiscoveredType(ptdep)) {
-							String displayName = rt.name;
+							String displayName = StatCollector
+									.translateToLocal("research.techresearch."
+											+ rt.name);
 							if (rt.isOtherType(ptdep)) {
 								if (ptdep.getDisplayResearchPoints(rt.name) == 0) {
 									continue;
 								}
-								displayName = "other " + displayName;
+
+								displayName = StatCollector
+										.translateToLocal("research.techresearch."
+												+ rt.name + ".other");
 							}
 							sender.addChatMessage(new ChatComponentText(
 									displayName

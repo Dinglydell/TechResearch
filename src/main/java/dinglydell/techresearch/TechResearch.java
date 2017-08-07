@@ -24,6 +24,8 @@ import dinglydell.techresearch.block.BlockPendulum;
 import dinglydell.techresearch.block.TRBlocks;
 import dinglydell.techresearch.event.PlayerEventHandler;
 import dinglydell.techresearch.event.TechKeyBindings;
+import dinglydell.techresearch.network.PacketBuyTech;
+import dinglydell.techresearch.network.PacketBuyTechHandler;
 import dinglydell.techresearch.network.PacketTechHandler;
 import dinglydell.techresearch.network.PacketTechResearch;
 import dinglydell.techresearch.recipe.CraftingReplacementHandler;
@@ -130,8 +132,13 @@ public class TechResearch {
 					new String[] {},
 					"The node requires any of these nodes to be unlocked");
 
+			String displayName = techtree.getString("displayString",
+					c,
+					"tech.techresearch." + c,
+					"Localisation string or display string of the tech");
+
 			TechTree.AddTechNode(new TechNode(c, type, unlocks, subTypeUnlocks,
-					costs, requiresAll, requiresAny));
+					costs, requiresAll, requiresAny, displayName));
 
 		}
 		techtree.save();
@@ -143,6 +150,11 @@ public class TechResearch {
 				PacketTechResearch.class,
 				0,
 				Side.CLIENT);
+
+		snw.registerMessage(PacketBuyTechHandler.class,
+				PacketBuyTech.class,
+				1,
+				Side.SERVER);
 	}
 
 	private void registerEventHandlers() {
