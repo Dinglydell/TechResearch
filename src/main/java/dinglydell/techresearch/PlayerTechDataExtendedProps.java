@@ -21,6 +21,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
 import scala.actors.threadpool.Arrays;
 import cpw.mods.fml.common.registry.GameData;
+import dinglydell.techresearch.experiment.Experiment;
 import dinglydell.techresearch.network.PacketTechResearch;
 
 public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
@@ -392,7 +393,8 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 			}
 			if (gain == -1) {
 				player.addChatMessage(new ChatComponentText(
-						"You can no longer gain " + discoveredType.name
+						"You can no longer gain "
+								+ discoveredType.getDisplayName()
 								+ " knowledge by observing " + exp.name
 								+ " here."));
 				continue;
@@ -402,7 +404,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 					+ " have earned you "
 					+ gain
 					+ " "
-					+ discoveredType.name
+					+ discoveredType.getDisplayName()
 					+ (discoveredType.name.equals("research") ? ""
 							: " research.")));
 		}

@@ -13,6 +13,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 
@@ -353,7 +354,7 @@ public class GuiResearch extends GuiScreen {
 		}
 
 		public void addTooltip(List<String> tooltip) {
-			tooltip.add(tech.getDisplayName());
+			tooltip.add(tech.type.getChatColour() + tech.getDisplayName());
 			for (CostComponent cost : components) {
 				cost.addTooltip(tooltip);
 			}
@@ -367,9 +368,30 @@ public class GuiResearch extends GuiScreen {
 									.getUnlocalizedName() + ".name"));
 				}
 			}
+			String typeDesc = tech.type.getDescription();
+			if (typeDesc != null) {
+				tooltip.add(tech.type.getChatColour() + ""
+						+ EnumChatFormatting.ITALIC + typeDesc);
+			}
 			String desc = tech.getDescription();
 			if (!desc.contains(".desc")) {
-				tooltip.add(desc);
+				tooltip.add("");
+				int n = 40;
+				// int repeat = (int) Math.ceil(desc.length() / (double) n);
+				int end = n;
+				for (int i = 0; i < desc.length(); i = end, end += n) {
+
+					while (end < desc.length()
+							&& end > i
+							&& !(desc.charAt(end) == ' ' || desc
+									.charAt(end - 1) == ' ')) {
+						end--;
+					}
+					if (end == i) {
+						end += n;
+					}
+					tooltip.add(desc.substring(i, Math.min(desc.length(), end)));
+				}
 			}
 		}
 

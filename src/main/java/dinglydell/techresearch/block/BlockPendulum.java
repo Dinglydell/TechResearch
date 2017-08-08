@@ -4,8 +4,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
-import dinglydell.techresearch.Experiment;
 import dinglydell.techresearch.PlayerTechDataExtendedProps;
+import dinglydell.techresearch.experiment.Experiment;
 
 public class BlockPendulum extends Block {
 

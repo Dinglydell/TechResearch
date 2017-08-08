@@ -9,8 +9,8 @@ import net.minecraftforge.event.entity.player.AnvilRepairEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import scala.util.Random;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import dinglydell.techresearch.Experiment;
 import dinglydell.techresearch.PlayerTechDataExtendedProps;
+import dinglydell.techresearch.experiment.Experiment;
 
 public class PlayerEventHandler {
 

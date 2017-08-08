@@ -1,3 +1,6 @@
+tile.pendulum.name=Wooden Pendulum
+
+
 gui.techresearch.other=Other
 gui.techresearch.tooltip.unlocks=Unlocks:
 
@@ -21,7 +24,10 @@ research.techresearch.zoology=Zoology
 research.techresearch.metallurgy=Metallurgy
 
 gui.techresearch.techtype.theory=Theory
+gui.techresearch.techtype.theory.desc=May lead to more breakthroughs in this field.
 gui.techresearch.techtype.application=Application
 
 tech.techresearch.stonetools=Stone Tools
+tech.techresearch.stonetools.desc=Wood is great and all but the tools it makes seem to break very easily. Perhaps tools can be made from a better material like... stone? It seems pretty solid.
 tech.techresearch.furnace=Stone Furnace
+tech.techresearch.furnace.desc=It looks like there may be a way of making items very warm indeed. Who knows what this might do to them.

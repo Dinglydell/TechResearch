@@ -1,8 +1,11 @@
-package dinglydell.techresearch;
+package dinglydell.techresearch.experiment;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import dinglydell.techresearch.PlayerTechDataExtendedProps;
+import dinglydell.techresearch.ResearchType;
 
 public class Experiment {
 	public static Experiment fall;
