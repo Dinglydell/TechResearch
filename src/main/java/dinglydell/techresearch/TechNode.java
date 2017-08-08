@@ -69,4 +69,8 @@ public class TechNode {
 		return StatCollector.translateToLocal(displayName);
 	}
 
+	public String getDescription() {
+		return StatCollector.translateToLocal(displayName + ".desc");
+	}
+
 }

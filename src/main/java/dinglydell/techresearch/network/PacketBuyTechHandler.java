@@ -40,7 +40,7 @@ public class PacketBuyTechHandler implements
 			// ensure they don't spend more than they have
 			spend = ptdep.spendResearchPoints(cost.getKey(), spend, false);
 
-			spend = ptdep.addProgress(message.node, cost.getKey(), spend);
+			ptdep.addProgress(message.node, cost.getKey(), spend);
 			ptdep.spendResearchPoints(cost.getKey(), spend, true);
 		}
 		return null;

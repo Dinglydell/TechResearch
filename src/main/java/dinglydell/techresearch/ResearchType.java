@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 
 public class ResearchType {
@@ -53,6 +54,7 @@ public class ResearchType {
 			ResearchType.materials);
 
 	public final String name;
+	public final ResourceLocation icon;
 	private ResearchType parentType = null;
 	private boolean isStartType = false;
 	private List<ResearchType> childTypes = new ArrayList<ResearchType>();
@@ -62,6 +64,9 @@ public class ResearchType {
 		if (researchTypes.containsKey(this.name)) {
 			throw new IllegalArgumentException(this.name + " already exists.");
 		}
+		icon = new ResourceLocation(TechResearch.MODID, "textures/icons/"
+				+ name + ".png");
+
 		researchTypes.put(this.name, this);
 	}
 

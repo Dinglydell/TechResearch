@@ -30,7 +30,7 @@ public class TechKeyBindings {
 	@SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = true)
 	public void onEvent(KeyInputEvent event) {
 		// DEBUG
-		System.out.println("Key Input Event");
+		// System.out.println("Key Input Event");
 
 		// check each enumerated key binding type for pressed and take
 		// appropriate action

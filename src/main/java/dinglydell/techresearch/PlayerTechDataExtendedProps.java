@@ -25,6 +25,7 @@ import dinglydell.techresearch.network.PacketTechResearch;
 
 public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 
+	public static final int NUM_AVAILABLE_TECHS = 4;
 	public static final String TECHDATA = "techData";
 	public static final String BIOLOGY = "biology";
 	public static final String ENGINEERING = "engineering";
@@ -84,13 +85,13 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 
 		// available nodes
 		NBTTagList avNodes = new NBTTagList();
-		for (Entry<String, TechNode> node : availableNodes.entrySet()) {
+		for (TechNode node : getAvailableNodes(false)) {
 			NBTTagCompound nodeTag = new NBTTagCompound();
 
 			// nodeTag.setString(AVAILABLE_NODE, node.getValue().id);
-			avNodes.appendTag(new NBTTagString(node.getValue().id));
+			avNodes.appendTag(new NBTTagString(node.id));
 		}
-		nbt.setTag(AVAILABLE_NODES, avNodes);
+		techData.setTag(AVAILABLE_NODES, avNodes);
 	}
 
 	@Override
@@ -122,7 +123,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 		}
 
 		// available nodes
-		NBTTagList avNodes = techData.getTagList(AVAILABLE_NODES, 10);
+		NBTTagList avNodes = techData.getTagList(AVAILABLE_NODES, 8);
 		availableNodes.clear();
 		for (int i = 0; i < avNodes.tagCount(); i++) {
 			String id = avNodes.getStringTagAt(i);
@@ -181,7 +182,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 		}
 		if (totalWeight > 0) {
 
-			for (int i = 0; i < 3; i++) {
+			for (int i = 0; i < NUM_AVAILABLE_TECHS; i++) {
 				if (nodes.size() > 0) {
 					TechNode node = generateNode(totalWeight, nodes, weights);
 					totalWeight -= weights.get(node);
@@ -191,7 +192,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 			}
 
 		}
-		sendPacket();
+
 	}
 
 	private TechNode generateNode(float totalWeight,
@@ -204,7 +205,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 			rnd -= weights.get(tn);
 
 		}
-		if (rnd == 0) {
+		if (i == 0) {
 			i = 1;
 		}
 		TechNode tn = nodes.get(i - 1);
@@ -260,7 +261,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 				player.addChatMessage(new ChatComponentText(
 						"You can now create "
 								+ StatCollector.translateToLocal(it
-										.getUnlocalizedName())));
+										.getUnlocalizedName() + ".name")));
 
 			}
 			for (String subType : tn.subTypeUnlocks) {
@@ -447,7 +448,11 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 	}
 
 	public Collection<TechNode> getAvailableNodes() {
-		if (availableNodes.size() < 3) {
+		return getAvailableNodes(true);
+	}
+
+	public Collection<TechNode> getAvailableNodes(boolean regen) {
+		if (regen && availableNodes.size() < NUM_AVAILABLE_TECHS) {
 			regenerateTechChoices();
 		}
 		return availableNodes.values();

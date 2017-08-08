@@ -363,7 +363,8 @@ public class TechResearch {
 				subTypesUnlocks,
 				costs,
 				new String[] {},
-				new String[] {});
+				new String[] {},
+				"research.techresearch." + id);
 
 	}
 
@@ -408,6 +409,26 @@ public class TechResearch {
 			Map<ResearchType, Double> costs,
 			String[] requiresAll,
 			String[] requiresAny) {
+		addDefaultNode(techtree,
+				id,
+				type,
+				unlocks,
+				subTypeUnlocks,
+				costs,
+				requiresAll,
+				requiresAny,
+				"tech.techresearch." + id);
+	}
+
+	private void addDefaultNode(Configuration techtree,
+			String id,
+			String type,
+			String[] unlocks,
+			String[] subTypeUnlocks,
+			Map<ResearchType, Double> costs,
+			String[] requiresAll,
+			String[] requiresAny,
+			String displayName) {
 		techtree.getStringList("unlocks",
 				id,
 				unlocks,
@@ -425,6 +446,7 @@ public class TechResearch {
 		techtree.getString("type", id, type, "");
 		techtree.getStringList("requiresAll", id, requiresAll, "");
 		techtree.getStringList("requiresAny", id, requiresAny, "");
+		techtree.getString("displayString", id, displayName, "");
 	}
 
 	private float getPositiveFloat(Configuration cfg,
