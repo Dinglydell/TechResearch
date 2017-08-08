@@ -34,7 +34,7 @@ public class ResearchType {
 			ResearchType.science);
 
 	// engineering
-	public static ResearchType smithing = new ResearchType("smithing",
+	public static ResearchType crafting = new ResearchType("crafting",
 			ResearchType.engineering);
 
 	// physics
@@ -52,6 +52,10 @@ public class ResearchType {
 	// materials
 	public static ResearchType metallurgy = new ResearchType("metallurgy",
 			ResearchType.materials);
+
+	// crafting
+	public static ResearchType smithing = new ResearchType("smithing",
+			ResearchType.crafting);
 
 	public final String name;
 	public final ResourceLocation icon;
@@ -193,5 +197,15 @@ public class ResearchType {
 
 	public boolean hasParentType() {
 		return this.parentType != null;
+	}
+
+	public static ResearchType getStartingType() {
+		for (Map.Entry<String, ResearchType> type : researchTypes.entrySet()) {
+			if (type.getValue().isStartType) {
+				return type.getValue();
+			}
+		}
+		return null;
+
 	}
 }

@@ -1,6 +1,7 @@
 package dinglydell.techresearch.gui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
@@ -60,18 +61,43 @@ public class GuiResearch extends GuiScreen {
 		}
 		int textX = 8;
 		int textY = 8;
-		i = 0;
+		// i = 0;
 		components.clear();
-		for (ResearchType rt : ResearchType.getTypes().values()) {
-			if (rt.isBaseDiscoveredType(ptdep)
-					&& !(rt.isOtherType(ptdep) && ptdep
-							.getDisplayResearchPoints(rt.name) == 0)) {
-				components.add(new CostComponent(mc, offsetLeft + textX,
-						offsetTop + textY + (i++ * 16), rt, ptdep
-								.getDisplayResearchPoints(rt.name)));
 
+		ResearchType rt = ResearchType.getStartingType();
+		addComponents(rt, offsetLeft + textX, offsetTop + textY);
+
+	}
+
+	private int addComponents(ResearchType rt, int offsetLeft, int offsetTop) {
+		addComponent(rt, offsetLeft, offsetTop);
+		int offsetChange = 16;
+		offsetTop += offsetChange;
+		offsetLeft += 4;
+		for (ResearchType child : rt.getChildren()) {
+			if (ptdep.hasDiscovered(child)) {
+				offsetTop = addComponents(child, offsetLeft, offsetTop);
 			}
 		}
+
+		return offsetTop;
+		// for (ResearchType rt : ResearchType.getTypes().values()) {
+		// if (rt.isBaseDiscoveredType(ptdep)
+		// && !(rt.isOtherType(ptdep) && ptdep
+		// .getDisplayResearchPoints(rt.name) == 0)) {
+		// components.add(new CostComponent(mc, offsetLeft + textX,
+		// offsetTop + textY + (i++ * 16), rt, ptdep
+		// .getDisplayResearchPoints(rt.name)));
+		//
+		// }
+		// }
+
+	}
+
+	private void addComponent(ResearchType rt, int offsetLeft, int offsetTop) {
+
+		components.add(new CostComponent(mc, offsetLeft, offsetTop, rt, Math
+				.round(rt.getValue(ptdep) * 100) / 100.0));
 
 	}
 
@@ -111,7 +137,7 @@ public class GuiResearch extends GuiScreen {
 			cost.drawCost();
 			boolean isHovering = cost.isHovering(x, y);
 			if (isHovering) {
-				cost.addTooltip(tooltip);
+				cost.addTooltip(tooltip, true);
 
 			}
 		}
@@ -275,7 +301,29 @@ public class GuiResearch extends GuiScreen {
 		}
 
 		public void addTooltip(List<String> tooltip) {
+			addTooltip(tooltip, false);
+		}
+
+		public void addTooltip(List<String> tooltip, boolean verbose) {
 			tooltip.add(type.getDisplayName() + ": " + getCostString());
+			if (verbose) {
+				ResearchType parent = type.getParentType();
+				List<ResearchType> parents = new ArrayList<ResearchType>();
+				while (parent != null) {
+					parents.add(parent);
+
+					parent = parent.getParentType();
+				}
+
+				for (int i = 1; i <= parents.size(); i++) {
+					parent = parents.get(parents.size() - i);
+
+					char[] indent = new char[i];
+					Arrays.fill(indent, ' ');
+					String indentString = new String(indent);
+					tooltip.add(indentString + "-" + parent.getDisplayName());
+				}
+			}
 
 		}
 	}
@@ -295,9 +343,12 @@ public class GuiResearch extends GuiScreen {
 			this.visible = true;
 			Minecraft mc = Minecraft.getMinecraft();
 			FontRenderer fontrenderer = mc.fontRenderer;
+			int costX = 2 * (x + 1);
 			for (Entry<ResearchType, Double> cost : tech.costs.entrySet()) {
-				components.add(new CostComponent(mc, 2 * (x + 1), 2 * (y
-						+ height - 8), cost.getKey(), cost.getValue()));
+				CostComponent cc = new CostComponent(mc, costX,
+						2 * (y + height - 8), cost.getKey(), cost.getValue());
+				components.add(cc);
+				costX += cc.getWidth() + 2;
 			}
 		}
 

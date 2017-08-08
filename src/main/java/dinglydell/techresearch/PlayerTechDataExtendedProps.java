@@ -234,7 +234,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 					+ " does not require any " + spendType.name + "."));
 		}
 		if (!nodes.containsKey(tn)) {
-			nodes.put(tn, new NodeProgress(tn, type, spendValue));
+			nodes.put(tn, new NodeProgress(tn, type, 0));
 		}
 		if (nodes.get(tn).progressLeft(type) <= 0) {
 			player.addChatMessage(new ChatComponentText(
@@ -315,6 +315,10 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 			Experiment exp,
 			double amount) {
 		double amt = amount;
+		ResearchType discoveredType = researchType;
+		while (!hasDiscovered(discoveredType)) {
+			discoveredType = discoveredType.getParentType();
+		}
 		if (experiments.containsKey(exp)) {
 			int q = experiments.get(exp);
 			amt /= q;
@@ -322,7 +326,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 			experiments.put(exp, q + 1);
 			if (amt == 0 && roundToTenth(amount / (q - 1)) > 0) {
 				player.addChatMessage(new ChatComponentText(
-						"You can no longer gain " + researchType.name
+						"You can no longer gain " + discoveredType.name
 								+ " knowledge by observing " + exp.name
 								+ " here."));
 			}
@@ -332,10 +336,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 		if (amt == 0) {
 			return 0;
 		}
-		ResearchType discoveredType = researchType;
-		while (!hasDiscovered(discoveredType)) {
-			discoveredType = discoveredType.getParentType();
-		}
+
 		player.addChatMessage(new ChatComponentText("Your observations of "
 				+ exp.name + " have earned you " + amt + " "
 				+ discoveredType.name
