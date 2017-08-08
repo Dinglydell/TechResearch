@@ -208,4 +208,16 @@ public class ResearchType {
 		return null;
 
 	}
+
+	/**
+	 * Returns the closest parent that has been discovered (or this if this has
+	 * been discovered)
+	 * */
+	public ResearchType getDiscoveredType(PlayerTechDataExtendedProps ptdep) {
+		ResearchType discoveredType = this;
+		while (!ptdep.hasDiscovered(discoveredType)) {
+			discoveredType = discoveredType.getParentType();
+		}
+		return discoveredType;
+	}
 }

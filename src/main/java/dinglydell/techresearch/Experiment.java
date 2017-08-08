@@ -38,7 +38,7 @@ public class Experiment {
 	}
 	public String name;
 
-	public Map<ResearchType, Double> initialValues;
+	private Map<ResearchType, Double> initialValues;
 
 	public Experiment(String name) {
 		this.name = name;
@@ -53,9 +53,72 @@ public class Experiment {
 		this.initialValues = initialValues;
 		for (Entry<ResearchType, Double> value : initialValues.entrySet()) {
 			if (!value.getKey().isBaseType()) {
-				throw new IllegalArgumentException(value.getKey()
-						+ " is not a base type!");
+				throw new IllegalArgumentException(this.name + ": "
+						+ value.getKey() + " is not a base type!");
 			}
 		}
 	}
+
+	/** Returns how much of this type the player should gain */
+	protected double getValue(ResearchType researchType,
+			PlayerTechDataExtendedProps ptdep,
+			double multiplier) {
+		double amount = initialValues.get(researchType) * multiplier;
+		double amt = amount;
+
+		double threshhold = 1.0;
+		int q = getUses(ptdep);
+
+		amt /= q;
+		amt = Math.round(amt * 10) / 10.0;
+		// experiments.put(this, q + 1);
+
+		if (amt < threshhold
+				&& Math.round(10 * amount / (q - 1)) / 10.0 >= threshhold) {
+			return -1;
+			// player.addChatMessage(new ChatComponentText(
+			// "You can no longer gain " + discoveredType.getDisplayName()
+			// + " knowledge by observing " + name + " here."));
+		}
+
+		if (amt < threshhold) {
+			return 0;
+		}
+
+		// player.addChatMessage(new ChatComponentText("Your observations of "
+		// + name + " have earned you " + amt + " "
+		// + discoveredType.getDisplayName()
+		// + (discoveredType.name.equals("research") ? "" : " research.")));
+		return amt;
+
+	}
+
+	/** Gets the number of times this experiment has been performed */
+	private int getUses(PlayerTechDataExtendedProps ptdep) {
+		int q;
+		if (ptdep.getExperiments().containsKey(this)) {
+			q = ptdep.getExperiments().get(this);
+		} else {
+			q = 1;
+		}
+		return q;
+	}
+
+	/**
+	 * Returns the amount this player should get when they perform the
+	 * experiment
+	 * 
+	 * Return -1 for a type if this is the first time it has reached 0 - an
+	 * appropriate message will be displayed notifying the player that they
+	 * can't get this type from the experiment anymore
+	 * */
+	public Map<ResearchType, Double> getValues(PlayerTechDataExtendedProps ptdep,
+			double multiplier) {
+		Map<ResearchType, Double> values = new HashMap<ResearchType, Double>();
+		for (Entry<ResearchType, Double> val : initialValues.entrySet()) {
+			values.put(val.getKey(), getValue(val.getKey(), ptdep, multiplier));
+		}
+		return values;
+	}
+
 }

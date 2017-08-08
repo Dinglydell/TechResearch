@@ -321,42 +321,42 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 		return hasCompleted(TechTree.nodes.get(tid));
 	}
 
-	private double addResearch(ResearchType researchType,
-			Experiment exp,
-			double amount) {
-		double amt = amount;
-		ResearchType discoveredType = researchType;
-		while (!hasDiscovered(discoveredType)) {
-			discoveredType = discoveredType.getParentType();
-		}
-		double threshhold = 1.0;
-		if (experiments.containsKey(exp)) {
-			int q = experiments.get(exp);
-			amt /= q;
-			amt = roundToTenth(amt);
-			experiments.put(exp, q + 1);
-
-			if (amt < threshhold
-					&& roundToTenth(amount / (q - 1)) >= threshhold) {
-				player.addChatMessage(new ChatComponentText(
-						"You can no longer gain " + discoveredType.name
-								+ " knowledge by observing " + exp.name
-								+ " here."));
-			}
-		} else {
-			experiments.put(exp, 1);
-		}
-		if (amt < threshhold) {
-			return 0;
-		}
-
-		player.addChatMessage(new ChatComponentText("Your observations of "
-				+ exp.name + " have earned you " + amt + " "
-				+ discoveredType.name
-				+ (discoveredType.name.equals("research") ? "" : " research.")));
-		return amt;
-
-	}
+	// private double addResearch(ResearchType researchType,
+	// Experiment exp,
+	// double amount) {
+	// double amt = amount;
+	// ResearchType discoveredType = researchType;
+	// while (!hasDiscovered(discoveredType)) {
+	// discoveredType = discoveredType.getParentType();
+	// }
+	// double threshhold = 1.0;
+	// if (experiments.containsKey(exp)) {
+	// int q = experiments.get(exp);
+	// amt /= q;
+	// amt = roundToTenth(amt);
+	// experiments.put(exp, q + 1);
+	//
+	// if (amt < threshhold
+	// && roundToTenth(amount / (q - 1)) >= threshhold) {
+	// player.addChatMessage(new ChatComponentText(
+	// "You can no longer gain " + discoveredType.name
+	// + " knowledge by observing " + exp.name
+	// + " here."));
+	// }
+	// } else {
+	// experiments.put(exp, 1);
+	// }
+	// if (amt < threshhold) {
+	// return 0;
+	// }
+	//
+	// player.addChatMessage(new ChatComponentText("Your observations of "
+	// + exp.name + " have earned you " + amt + " "
+	// + discoveredType.name
+	// + (discoveredType.name.equals("research") ? "" : " research.")));
+	// return amt;
+	//
+	// }
 
 	public Map<Experiment, Integer> getExperiments() {
 		return experiments;
@@ -367,17 +367,50 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 
 	}
 
+	/** Adds research points for this experiment with a multiplier */
 	public void addResearchPoints(Experiment exp, double multiplier) {
-		for (Entry<ResearchType, Double> value : exp.initialValues.entrySet()) {
-			researchPoints.put(value.getKey(),
-					getResearchPoints(value.getKey())
-							+ addResearch(value.getKey(), exp, value.getValue()
-									* multiplier));
+		if (!experiments.containsKey(exp)) {
+			experiments.put(exp, 0);
+		}
+		experiments.put(exp, experiments.get(exp) + 1);
+		for (Entry<ResearchType, Double> value : exp
+				.getValues(this, multiplier).entrySet()) {
+			double gain = value.getValue();
+			if (gain > 0) {
+				researchPoints.put(value.getKey(),
+						getResearchPoints(value.getKey()) + gain);
+			}
+
+			if (gain == 0) {
+				continue;
+			}
+
+			ResearchType discoveredType = value.getKey()
+					.getDiscoveredType(this);
+			while (!hasDiscovered(discoveredType)) {
+				discoveredType = discoveredType.getParentType();
+			}
+			if (gain == -1) {
+				player.addChatMessage(new ChatComponentText(
+						"You can no longer gain " + discoveredType.name
+								+ " knowledge by observing " + exp.name
+								+ " here."));
+				continue;
+			}
+			player.addChatMessage(new ChatComponentText("Your observations of "
+					+ exp.name
+					+ " have earned you "
+					+ gain
+					+ " "
+					+ discoveredType.name
+					+ (discoveredType.name.equals("research") ? ""
+							: " research.")));
 		}
 
 		sendPacket();
 	}
 
+	/** Adds research points for this experiment */
 	public void addResearchPoints(Experiment exp) {
 		addResearchPoints(exp, 1.0);
 	}
