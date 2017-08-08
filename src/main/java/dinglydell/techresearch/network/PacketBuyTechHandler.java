@@ -39,9 +39,9 @@ public class PacketBuyTechHandler implements
 			}
 			// ensure they don't spend more than they have
 			spend = ptdep.spendResearchPoints(cost.getKey(), spend, false);
-
-			ptdep.addProgress(message.node, cost.getKey(), spend);
 			ptdep.spendResearchPoints(cost.getKey(), spend, true);
+			ptdep.addProgress(message.node, cost.getKey(), spend);
+
 		}
 		return null;
 	}

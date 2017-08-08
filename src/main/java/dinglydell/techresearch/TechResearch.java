@@ -49,7 +49,8 @@ public class TechResearch {
 	}
 
 	private void registerBlocks() {
-		TRBlocks.pendulum = new BlockPendulum();
+		TRBlocks.pendulum = (BlockPendulum) new BlockPendulum()
+				.setBlockName("pendulum");
 		GameRegistry.registerBlock(TRBlocks.pendulum, "pendulum");
 
 	}
@@ -131,14 +132,19 @@ public class TechResearch {
 					c,
 					new String[] {},
 					"The node requires any of these nodes to be unlocked");
-
+			String[] requiresPoints = techtree
+					.getStringList("requiresPoints",
+							c,
+							new String[] {},
+							"The node requires the player to have research points for all of these types. This is usually used for unlocking new research point types (so you can only get the tech to unlock physics if you unknowingly have physics points)");
 			String displayName = techtree.getString("displayString",
 					c,
 					"tech.techresearch." + c,
 					"Localisation string or display string of the tech");
 
 			TechTree.AddTechNode(new TechNode(c, type, unlocks, subTypeUnlocks,
-					costs, requiresAll, requiresAny, displayName));
+					costs, requiresAll, requiresAny, requiresPoints,
+					displayName));
 
 		}
 		techtree.save();
@@ -446,6 +452,7 @@ public class TechResearch {
 		techtree.getString("type", id, type, "");
 		techtree.getStringList("requiresAll", id, requiresAll, "");
 		techtree.getStringList("requiresAny", id, requiresAny, "");
+		techtree.getStringList("requiresPoints", id, subTypeUnlocks, "");
 		techtree.getString("displayString", id, displayName, "");
 	}
 

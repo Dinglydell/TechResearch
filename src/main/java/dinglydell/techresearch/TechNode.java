@@ -17,28 +17,47 @@ public class TechNode {
 	public final String[] requiresAll;
 	public final String[] requiresAny;
 
+	/**
+	 * Requires you to have research points of these types
+	 * */
+	public final String[] requiresPoints;
+
 	public final String displayName;
+
+	public final String description;
 
 	public TechNodeType type;
 
 	public TechNode(String id, String type, String[] unlocks,
 			String[] subTypeUnlocks, Map<ResearchType, Double> costs,
-			String[] requiresAll, String[] requiresAny, String displayName) {
+			String[] requiresAll, String[] requiresAny,
+			String[] requiresPoints, String displayName, String description) {
 		this.id = id;
 		this.unlocks = unlocks;
 		this.subTypeUnlocks = subTypeUnlocks;
 		this.costs = costs;
 		this.requiresAll = requiresAll;
 		this.requiresAny = requiresAny;
+		this.requiresPoints = requiresPoints;
 		this.displayName = displayName;
+		this.description = description;
 		this.type = TechNodeType.types.get(type);
 	}
 
 	public TechNode(String id, String type, String[] unlocks,
 			String[] subTypeUnlocks, Map<ResearchType, Double> costs,
-			String[] requiresAll, String[] requiresAny) {
+			String[] requiresAll, String[] requiresAny,
+			String[] requiresPoints, String displayName) {
 		this(id, type, unlocks, subTypeUnlocks, costs, requiresAll,
-				requiresAny, "tech.techresearch." + id);
+				requiresAny, requiresPoints, displayName, "tech.techresearch."
+						+ id + ".desc");
+	}
+
+	public TechNode(String id, String type, String[] unlocks,
+			String[] subTypeUnlocks, Map<ResearchType, Double> costs,
+			String[] requiresAll, String[] requiresAny, String[] requiresPoints) {
+		this(id, type, unlocks, subTypeUnlocks, costs, requiresAll,
+				requiresAny, requiresPoints, "tech.techresearch." + id);
 	}
 
 	public String costsAsString() {

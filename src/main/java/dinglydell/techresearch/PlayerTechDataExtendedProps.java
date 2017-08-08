@@ -27,9 +27,9 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 
 	public static final int NUM_AVAILABLE_TECHS = 4;
 	public static final String TECHDATA = "techData";
-	public static final String BIOLOGY = "biology";
-	public static final String ENGINEERING = "engineering";
-	public static final String PHYSICS = "physics";
+	// public static final String BIOLOGY = "biology";
+	// public static final String ENGINEERING = "engineering";
+	// public static final String PHYSICS = "physics";
 	public static final String RESEARCH_POINTS = "researchPoints";
 	public static final String RESEARCH_NAME = "name";
 	public static final String TECH_NODES = "techNodes";
@@ -142,6 +142,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 	public void regenerateTechChoices() {
 		availableNodes.clear();
 		List<TechNode> nodes = new ArrayList<TechNode>(TechTree.nodes.values());
+		final PlayerTechDataExtendedProps ptdep = this;
 		nodes.removeIf(new Predicate<TechNode>() {
 			@Override
 			public boolean test(TechNode tn) {
@@ -150,6 +151,11 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 				}
 				for (ResearchType rt : tn.costs.keySet()) {
 					if (!hasDiscovered(rt)) {
+						return true;
+					}
+				}
+				for (String type : tn.requiresPoints) {
+					if (ResearchType.getType(type).getValue(ptdep) == 0) {
 						return true;
 					}
 				}
@@ -163,7 +169,8 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 						return false;
 					}
 				}
-				return false;
+
+				return tn.requiresAny.length != 0;
 			}
 		});
 		float totalWeight = 0;
@@ -250,11 +257,11 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 					.put(type, nodes.get(tn).node.costs.get(type));
 		}
 		player.addChatMessage(new ChatComponentText(spendValue + " "
-				+ type.name + " points spent towards " + tn.id + " ("
-				+ (100 * nodes.get(tn).getTotalProgress()) + "%)"));
+				+ type.name + " points spent towards " + tn.getDisplayName()
+				+ " (" + (100 * nodes.get(tn).getTotalProgress()) + "%)"));
 		if (nodes.get(tn).isComplete()) {
 			player.addChatMessage(new ChatComponentText("You have completed "
-					+ tn.id));
+					+ tn.getDisplayName()));
 
 			for (String item : tn.unlocks) {
 				Item it = GameData.getItemRegistry().getObject(item);
@@ -267,8 +274,11 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 			for (String subType : tn.subTypeUnlocks) {
 				player.addChatMessage(new ChatComponentText(
 						"You now know that some "
-								+ ResearchType.getType(subType).getParentType().name
-								+ " can be specialised as " + subType));
+								+ ResearchType.getType(subType).getParentType()
+										.getDisplayName()
+								+ " can be specialised as "
+								+ ResearchType.getType(subType)
+										.getDisplayName()));
 			}
 
 			regenerateTechChoices();
@@ -319,12 +329,15 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 		while (!hasDiscovered(discoveredType)) {
 			discoveredType = discoveredType.getParentType();
 		}
+		double threshhold = 1.0;
 		if (experiments.containsKey(exp)) {
 			int q = experiments.get(exp);
 			amt /= q;
 			amt = roundToTenth(amt);
 			experiments.put(exp, q + 1);
-			if (amt == 0 && roundToTenth(amount / (q - 1)) > 0) {
+
+			if (amt < threshhold
+					&& roundToTenth(amount / (q - 1)) >= threshhold) {
 				player.addChatMessage(new ChatComponentText(
 						"You can no longer gain " + discoveredType.name
 								+ " knowledge by observing " + exp.name
@@ -333,7 +346,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 		} else {
 			experiments.put(exp, 1);
 		}
-		if (amt == 0) {
+		if (amt < threshhold) {
 			return 0;
 		}
 
@@ -407,6 +420,9 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 	public double spendResearchPoints(ResearchType type,
 			double amount,
 			boolean doSpend) {
+		if (amount == 0) {
+			return 0;
+		}
 		if (type.isBaseType()) {
 			double value = Math.min(amount, getResearchPoints(type));
 			if (doSpend) {
@@ -427,19 +443,27 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 	}
 
 	private void spendChildren(List<ResearchType> children, double amount) {
-		double spendAmt = amount / children.size();
+		// double spendAmt = amount / children.size();
+		double total = 0;
 		for (ResearchType child : children) {
-
-			double amt = spendResearchPoints(child, spendAmt, false);
-			if (amt < spendAmt) {
-				List<ResearchType> newChildren = new ArrayList<ResearchType>(
-						children);
-				newChildren.remove(child);
-				spendChildren(newChildren, spendAmt);
-			} else {
-				spendResearchPoints(child, spendAmt, true);
-			}
+			total += child.getValue(this);
 		}
+		for (ResearchType child : children) {
+			double amt = amount * child.getValue(this) / total;
+			spendResearchPoints(child, amt, true);
+		}
+		// for (ResearchType child : children) {
+		//
+		// double amt = spendResearchPoints(child, spendAmt, false);
+		// if (amt < spendAmt) {
+		// List<ResearchType> newChildren = new ArrayList<ResearchType>(
+		// children);
+		// newChildren.remove(child);
+		// spendChildren(newChildren, spendAmt);
+		// } else {
+		// spendResearchPoints(child, spendAmt, true);
+		// }
+		// }
 
 	}
 
