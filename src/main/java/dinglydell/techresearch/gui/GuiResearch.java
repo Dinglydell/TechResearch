@@ -24,11 +24,11 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import dinglydell.techresearch.NodeProgress;
 import dinglydell.techresearch.PlayerTechDataExtendedProps;
-import dinglydell.techresearch.ResearchType;
 import dinglydell.techresearch.TechNode;
 import dinglydell.techresearch.TechResearch;
 import dinglydell.techresearch.event.TechKeyBindings;
 import dinglydell.techresearch.network.PacketBuyTech;
+import dinglydell.techresearch.researchtype.ResearchType;
 
 public class GuiResearch extends GuiScreen {
 	private static final ResourceLocation TEXTURE = new ResourceLocation(

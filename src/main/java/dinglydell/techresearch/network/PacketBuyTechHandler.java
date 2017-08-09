@@ -10,7 +10,7 @@ import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import dinglydell.techresearch.NodeProgress;
 import dinglydell.techresearch.PlayerTechDataExtendedProps;
-import dinglydell.techresearch.ResearchType;
+import dinglydell.techresearch.researchtype.ResearchType;
 
 public class PacketBuyTechHandler implements
 		IMessageHandler<PacketBuyTech, IMessage> {

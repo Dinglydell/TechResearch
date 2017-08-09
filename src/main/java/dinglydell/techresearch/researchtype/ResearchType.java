@@ -1,9 +1,12 @@
-package dinglydell.techresearch;
+package dinglydell.techresearch.researchtype;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import dinglydell.techresearch.PlayerTechDataExtendedProps;
+import dinglydell.techresearch.TechResearch;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;

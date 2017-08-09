@@ -29,6 +29,7 @@ import dinglydell.techresearch.network.PacketBuyTechHandler;
 import dinglydell.techresearch.network.PacketTechHandler;
 import dinglydell.techresearch.network.PacketTechResearch;
 import dinglydell.techresearch.recipe.CraftingReplacementHandler;
+import dinglydell.techresearch.researchtype.ResearchType;
 
 @Mod(modid = TechResearch.MODID, version = TechResearch.VERSION)
 public class TechResearch {

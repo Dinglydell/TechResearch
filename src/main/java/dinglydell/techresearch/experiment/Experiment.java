@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import dinglydell.techresearch.PlayerTechDataExtendedProps;
-import dinglydell.techresearch.ResearchType;
+import dinglydell.techresearch.researchtype.ResearchType;
 
 public class Experiment {
 	public static Experiment fall;
@@ -41,7 +41,7 @@ public class Experiment {
 	}
 	public String name;
 
-	private Map<ResearchType, Double> initialValues;
+	protected Map<ResearchType, Double> initialValues;
 
 	public Experiment(String name) {
 		this.name = name;

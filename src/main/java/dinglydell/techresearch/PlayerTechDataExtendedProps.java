@@ -22,7 +22,9 @@ import net.minecraftforge.common.IExtendedEntityProperties;
 import scala.actors.threadpool.Arrays;
 import cpw.mods.fml.common.registry.GameData;
 import dinglydell.techresearch.experiment.Experiment;
+import dinglydell.techresearch.experiment.ExperimentContext;
 import dinglydell.techresearch.network.PacketTechResearch;
+import dinglydell.techresearch.researchtype.ResearchType;
 
 public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 
@@ -368,48 +370,68 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 
 	}
 
-	/** Adds research points for this experiment with a multiplier */
-	public void addResearchPoints(Experiment exp, double multiplier) {
+	/**
+	 * 
+	 * */
+	public <T> void addResearchPoints(ExperimentContext<T> exp,
+			double multiplier,
+			T context) {
+
+		incrementExperiment(exp);
+		for (Entry<ResearchType, Double> value : exp.getValues(this,
+				multiplier,
+				context).entrySet()) {
+			addPoints(exp, value);
+		}
+
+		sendPacket();
+	}
+
+	private void addPoints(Experiment exp, Entry<ResearchType, Double> value) {
+		double gain = value.getValue();
+		if (gain > 0) {
+			researchPoints.put(value.getKey(),
+					getResearchPoints(value.getKey()) + gain);
+		}
+
+		if (gain == 0) {
+			return;
+		}
+
+		ResearchType discoveredType = value.getKey().getDiscoveredType(this);
+		while (!hasDiscovered(discoveredType)) {
+			discoveredType = discoveredType.getParentType();
+		}
+		if (gain == -1) {
+			player.addChatMessage(new ChatComponentText(
+					"You can no longer gain " + discoveredType.getDisplayName()
+							+ " knowledge by observing " + exp.name + " here."));
+			return;
+		}
+		player.addChatMessage(new ChatComponentText("Your observations of "
+				+ exp.name + " have earned you " + gain + " "
+				+ discoveredType.getDisplayName()
+				+ (discoveredType.name.equals("research") ? "" : " research.")));
+	}
+
+	private void incrementExperiment(Experiment exp) {
 		if (!experiments.containsKey(exp)) {
 			experiments.put(exp, 0);
 		}
 		experiments.put(exp, experiments.get(exp) + 1);
+
+	}
+
+	/** Adds research points for this experiment with a multiplier */
+	public void addResearchPoints(Experiment exp, double multiplier) {
+		incrementExperiment(exp);
 		for (Entry<ResearchType, Double> value : exp
 				.getValues(this, multiplier).entrySet()) {
-			double gain = value.getValue();
-			if (gain > 0) {
-				researchPoints.put(value.getKey(),
-						getResearchPoints(value.getKey()) + gain);
-			}
-
-			if (gain == 0) {
-				continue;
-			}
-
-			ResearchType discoveredType = value.getKey()
-					.getDiscoveredType(this);
-			while (!hasDiscovered(discoveredType)) {
-				discoveredType = discoveredType.getParentType();
-			}
-			if (gain == -1) {
-				player.addChatMessage(new ChatComponentText(
-						"You can no longer gain "
-								+ discoveredType.getDisplayName()
-								+ " knowledge by observing " + exp.name
-								+ " here."));
-				continue;
-			}
-			player.addChatMessage(new ChatComponentText("Your observations of "
-					+ exp.name
-					+ " have earned you "
-					+ gain
-					+ " "
-					+ discoveredType.getDisplayName()
-					+ (discoveredType.name.equals("research") ? ""
-							: " research.")));
+			addPoints(exp, value);
 		}
 
 		sendPacket();
+
 	}
 
 	/** Adds research points for this experiment */
