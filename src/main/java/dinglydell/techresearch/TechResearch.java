@@ -10,6 +10,7 @@ import net.minecraft.init.Blocks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import scala.actors.threadpool.Arrays;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -145,9 +146,10 @@ public class TechResearch {
 					"tech.techresearch." + c,
 					"Localisation string or display string of the tech");
 
-			TechTree.AddTechNode(new TechNode(c, type, unlocks, subTypeUnlocks,
-					costs, requiresAll, requiresAny, requiresPoints,
-					displayName));
+			TechTree.AddTechNode(new TechNode(c, type, costs)
+					.setDisplayName(displayName)
+					.addItemsUnlocked(Arrays.asList(unlocks))
+					.addSubtypesUnlocked(Arrays.asList(subTypeUnlocks)));
 
 		}
 		techtree.save();

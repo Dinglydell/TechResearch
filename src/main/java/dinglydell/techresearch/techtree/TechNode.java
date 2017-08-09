@@ -1,6 +1,7 @@
 package dinglydell.techresearch.techtree;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,59 +21,254 @@ public class TechNode {
 
 	public final Map<ResearchType, Double> costs;
 
-	private final String[] requiresAll;
-	private final String[] requiresAny;
+	private final List<TechNode> requiresAll;
+	private final List<TechNode> requiresAny;
 
 	/**
 	 * Requires you to have research points of these types
 	 * */
-	private final String[] requiresPoints;
+	private final List<ResearchType> requiresPoints;
 
-	public final String displayName;
+	public String displayName;
 
-	public final String description;
+	public String description;
 
 	public TechNodeType type;
 
-	public TechNode(String id, String type, String[] unlocks,
-			String[] subTypeUnlocks, Map<ResearchType, Double> costs,
-			String[] requiresAll, String[] requiresAny,
-			String[] requiresPoints, String displayName, String description) {
+	public TechNode(String id, String type, Map<ResearchType, Double> costs) {
+		// , String[] unlocks,
+		// String[] subTypeUnlocks,,
+		// String[] requiresAll, String[] requiresAny,
+		// String[] requiresPoints, ) {
+
 		this.id = id;
 
 		this.unlocks = new ArrayList<Item>();
-		for (String it : unlocks) {
-			this.unlocks.add(GameData.getItemRegistry().getObject(it));
-		}
+
 		this.subTypeUnlocks = new ArrayList<ResearchType>();
-		for (String rt : subTypeUnlocks) {
-			this.subTypeUnlocks.add(ResearchType.getType(rt));
-		}
 
 		this.costs = costs;
-		this.requiresAll = requiresAll;
-		this.requiresAny = requiresAny;
-		this.requiresPoints = requiresPoints;
-		this.displayName = displayName;
-		this.description = description;
+		this.requiresAll = new ArrayList<TechNode>();
+		this.requiresAny = new ArrayList<TechNode>();
+		this.requiresPoints = new ArrayList<ResearchType>();
+		// for (String rt : requiresPoints) {
+		// this.requiresPoints.add(ResearchType.getType(rt));
+		// }
+		this.displayName = "tech.techresearch." + id;
+		this.description = "tech.techresearch." + id + ".desc";
 		this.type = TechNodeType.types.get(type);
 	}
 
-	public TechNode(String id, String type, String[] unlocks,
-			String[] subTypeUnlocks, Map<ResearchType, Double> costs,
-			String[] requiresAll, String[] requiresAny,
-			String[] requiresPoints, String displayName) {
-		this(id, type, unlocks, subTypeUnlocks, costs, requiresAll,
-				requiresAny, requiresPoints, displayName, "tech.techresearch."
-						+ id + ".desc");
+	/**
+	 * Sets the localisation string for the display name. Default is
+	 * tech.techresearch.NODEID
+	 * */
+	public TechNode setDisplayName(String name) {
+		this.displayName = name;
+		return this;
 	}
 
-	public TechNode(String id, String type, String[] unlocks,
-			String[] subTypeUnlocks, Map<ResearchType, Double> costs,
-			String[] requiresAll, String[] requiresAny, String[] requiresPoints) {
-		this(id, type, unlocks, subTypeUnlocks, costs, requiresAll,
-				requiresAny, requiresPoints, "tech.techresearch." + id);
+	/**
+	 * Sets the localisation string for the description. Default is
+	 * tech.techresearch.NODEID.desc
+	 * 
+	 * If it can't translate it won't display a description (TODO: This part is
+	 * only partially implemented)
+	 * */
+	public TechNode setDecsription(String desc) {
+		this.description = desc;
+		return this;
 	}
+
+	/**
+	 * Adds a tech requirement for this tech node.
+	 * 
+	 * The node requires every requirementAll to be valid.
+	 * */
+	public TechNode addRequirementAll(String nodeID) {
+		return addRequirementAll(nodeID);
+
+	}
+
+	/**
+	 * Adds a tech requirement for this tech node.
+	 * 
+	 * The node requires every requirementAll to be valid.
+	 * */
+	public TechNode addRequirementAll(TechNode required) {
+		requiresAll.add(required);
+		return this;
+
+	}
+
+	/**
+	 * Adds many requirements at once for this tech node.
+	 * 
+	 * The node requires every requirementAll to be valid.
+	 * */
+	public TechNode addRequirementsAll(Collection<String> reqAll) {
+		for (String id : reqAll) {
+			addRequirementAll(id);
+		}
+		return this;
+
+	}
+
+	/**
+	 * Adds a tech requirement for this tech node.
+	 * 
+	 * The node requires ANY requirementAny to be valid.
+	 * */
+	public TechNode addRequirementAny(String nodeID) {
+		return addRequirementAny(TechTree.nodes.get(nodeID));
+	}
+
+	/**
+	 * Adds a tech requirement for this tech node.
+	 * 
+	 * The node requires ANY requirementAny to be valid.
+	 * */
+	public TechNode addRequirementAny(TechNode required) {
+		requiresAny.add(required);
+		return this;
+
+	}
+
+	/**
+	 * Adds many requirements at once for this tech node.
+	 * 
+	 * The node requires ANY requirementAny to be valid.
+	 * */
+	public TechNode addRequirementsAny(Collection<String> reqAny) {
+		for (String id : reqAny) {
+			addRequirementAny(id);
+		}
+		return this;
+	}
+
+	/**
+	 * Adds many research points requirements to this tech node at once.
+	 * 
+	 * @param reqPts
+	 *            The node will require the player to have at least some
+	 *            research points of each of these type to be valid
+	 * */
+	public TechNode addRequirementsPoints(Collection<String> reqPts) {
+		for (String id : reqPts) {
+			addRequirementPoints(id);
+		}
+		return this;
+	}
+
+	/**
+	 * Adds a research points requirement to this tech node.
+	 * 
+	 * @param typeID
+	 *            The node will require the player to have at least some
+	 *            research points of this type to be valid
+	 * */
+	public TechNode addRequirementPoints(String typeID) {
+		return addRequirementPoints(ResearchType.getType(typeID));
+	}
+
+	/**
+	 * Adds a research points requirement to this tech node.
+	 * 
+	 * @param type
+	 *            The node will require the player to have at least some
+	 *            research points of this type to be valid
+	 * */
+	public TechNode addRequirementPoints(ResearchType type) {
+		requiresPoints.add(type);
+		return this;
+	}
+
+	/**
+	 * Adds multiple items that will have its recipe unlocked by this tech node.
+	 * 
+	 * Once a tech node is set to unlock an item, its recipe will automatically
+	 * be unavailable in all methods defined by registered IReplacementHandlers
+	 * until the node is unlocked.
+	 * */
+	public TechNode addItemsUnlocked(Iterable<String> items) {
+		for (String id : items) {
+			addItemUnlocked(id);
+		}
+		return this;
+	}
+
+	/**
+	 * Adds an item that will have its recipe unlocked by this tech node.
+	 * 
+	 * Once a tech node is set to unlock an item, its recipe will automatically
+	 * be unavailable in all methods defined by registered IReplacementHandlers
+	 * until the node is unlocked.
+	 * */
+	public TechNode addItemUnlocked(String itemID) {
+
+		return addItemUnlocked(GameData.getItemRegistry().getObject(itemID));
+	}
+
+	/**
+	 * Adds an item that will have its recipe unlocked by this tech node.
+	 * 
+	 * Once a tech node is set to unlock an item, its recipe will automatically
+	 * be unavailable in all methods defined by registered IReplacementHandlers
+	 * until the node is unlocked.
+	 * */
+	public TechNode addItemUnlocked(Item item) {
+
+		this.unlocks.add(item);
+		return this;
+	}
+
+	/**
+	 * Adds many research types that this tech node will unlock.
+	 * 
+	 * If the player has any tech that unlocks this type then it will be
+	 * available
+	 * */
+	public TechNode addSubtypesUnlocked(Iterable<String> rts) {
+		for (String id : rts) {
+			addSubtypeUnlocked(id);
+		}
+		return this;
+	}
+
+	/**
+	 * Adds a research type that this tech node will unlock.
+	 * 
+	 * If the player has any tech that unlocks this type then it will be
+	 * available
+	 * */
+	public TechNode addSubtypeUnlocked(String typeID) {
+		return addSubtypeUnlocked(ResearchType.getType(typeID));
+	}
+
+	/**
+	 * Adds a research type that this tech node will unlock.
+	 * 
+	 * If the player has any tech that unlocks this type then it will be
+	 * available
+	 * */
+	public TechNode addSubtypeUnlocked(ResearchType type) {
+		this.requiresPoints.add(type);
+		return this;
+	}
+
+	// public TechNode(String id, String type,
+	// // String[] subTypeUnlocks,
+	// Map<ResearchType, Double> costs,
+	// // String[] requiresAll, String[] requiresAny,
+	// // String[] requiresPoints,
+	// String displayName) {
+	// this(id, type, costs, displayName, "tech.techresearch." + id + ".desc");
+	// }
+	//
+	// public TechNode(String id, String type, Map<ResearchType, Double> costs)
+	// {
+	// this(id, type, costs, "tech.techresearch." + id);
+	// }
 
 	public List<Item> getItemsUnlocked() {
 
@@ -96,23 +292,23 @@ public class TechNode {
 				return true;
 			}
 		}
-		for (String type : this.requiresPoints) {
-			if (ResearchType.getType(type).getValue(ptdep) == 0) {
+		for (ResearchType type : this.requiresPoints) {
+			if (type.getValue(ptdep) == 0) {
 				return true;
 			}
 		}
-		for (String tid : this.requiresAll) {
-			if (!ptdep.hasCompleted(tid)) {
+		for (TechNode tn : this.requiresAll) {
+			if (!ptdep.hasCompleted(tn)) {
 				return true;
 			}
 		}
-		for (String tid : this.requiresAny) {
-			if (ptdep.hasCompleted(tid)) {
+		for (TechNode tn : this.requiresAny) {
+			if (ptdep.hasCompleted(tn)) {
 				return false;
 			}
 		}
 
-		return this.requiresAny.length != 0;
+		return this.requiresAny.size() != 0;
 	}
 
 	public String costsAsString() {
