@@ -1,4 +1,4 @@
-package dinglydell.techresearch;
+package dinglydell.techresearch.techtree;
 
 import java.util.HashMap;
 import java.util.Map;

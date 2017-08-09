@@ -12,9 +12,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.ReflectionHelper;
-import dinglydell.techresearch.NodeProgress;
 import dinglydell.techresearch.PlayerTechDataExtendedProps;
-import dinglydell.techresearch.TechNode;
+import dinglydell.techresearch.techtree.NodeProgress;
+import dinglydell.techresearch.techtree.TechNode;
 
 public class RecipeResearchable implements IRecipe {
 	private static final Field eventHandlerField = ReflectionHelper.findField(

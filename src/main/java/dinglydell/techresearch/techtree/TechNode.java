@@ -1,4 +1,4 @@
-package dinglydell.techresearch;
+package dinglydell.techresearch.techtree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import net.minecraft.item.Item;
 import net.minecraft.util.StatCollector;
 import cpw.mods.fml.common.registry.GameData;
+import dinglydell.techresearch.PlayerTechDataExtendedProps;
 import dinglydell.techresearch.researchtype.ResearchType;
 
 public class TechNode {

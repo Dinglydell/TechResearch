@@ -30,6 +30,8 @@ import dinglydell.techresearch.network.PacketTechHandler;
 import dinglydell.techresearch.network.PacketTechResearch;
 import dinglydell.techresearch.recipe.CraftingReplacementHandler;
 import dinglydell.techresearch.researchtype.ResearchType;
+import dinglydell.techresearch.techtree.TechNode;
+import dinglydell.techresearch.techtree.TechTree;
 
 @Mod(modid = TechResearch.MODID, version = TechResearch.VERSION)
 public class TechResearch {

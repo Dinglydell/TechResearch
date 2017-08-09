@@ -21,13 +21,13 @@ import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import dinglydell.techresearch.NodeProgress;
 import dinglydell.techresearch.PlayerTechDataExtendedProps;
-import dinglydell.techresearch.TechNode;
 import dinglydell.techresearch.TechResearch;
 import dinglydell.techresearch.event.TechKeyBindings;
 import dinglydell.techresearch.network.PacketBuyTech;
 import dinglydell.techresearch.researchtype.ResearchType;
+import dinglydell.techresearch.techtree.NodeProgress;
+import dinglydell.techresearch.techtree.TechNode;
 
 public class GuiResearch extends GuiScreen {
 	private static final ResourceLocation TEXTURE = new ResourceLocation(

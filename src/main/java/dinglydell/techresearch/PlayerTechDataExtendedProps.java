@@ -23,6 +23,9 @@ import dinglydell.techresearch.experiment.Experiment;
 import dinglydell.techresearch.experiment.ExperimentContext;
 import dinglydell.techresearch.network.PacketTechResearch;
 import dinglydell.techresearch.researchtype.ResearchType;
+import dinglydell.techresearch.techtree.NodeProgress;
+import dinglydell.techresearch.techtree.TechNode;
+import dinglydell.techresearch.techtree.TechTree;
 
 public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 

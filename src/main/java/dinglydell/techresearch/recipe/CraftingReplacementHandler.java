@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import cpw.mods.fml.common.registry.GameRegistry;
-import dinglydell.techresearch.TechNode;
+import dinglydell.techresearch.techtree.TechNode;
 
 public class CraftingReplacementHandler implements IReplacementHandler {
 

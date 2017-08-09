@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import dinglydell.techresearch.researchtype.ResearchType;
+import dinglydell.techresearch.techtree.TechNode;
 
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;

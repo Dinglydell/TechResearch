@@ -3,8 +3,8 @@ package dinglydell.techresearch.network;
 import io.netty.buffer.ByteBuf;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import dinglydell.techresearch.TechNode;
-import dinglydell.techresearch.TechTree;
+import dinglydell.techresearch.techtree.TechNode;
+import dinglydell.techresearch.techtree.TechTree;
 
 // todo: superclass for this
 public class PacketBuyTech implements IMessage {
