@@ -1,28 +1,31 @@
 package dinglydell.techresearch;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import dinglydell.techresearch.researchtype.ResearchType;
-
+import net.minecraft.item.Item;
 import net.minecraft.util.StatCollector;
+import cpw.mods.fml.common.registry.GameData;
+import dinglydell.techresearch.researchtype.ResearchType;
 
 public class TechNode {
 
 	public final String id;
 
-	public final String[] unlocks;
-	public final String[] subTypeUnlocks;
+	private final List<Item> unlocks;
+	private final List<ResearchType> subTypeUnlocks;
 
 	public final Map<ResearchType, Double> costs;
 
-	public final String[] requiresAll;
-	public final String[] requiresAny;
+	private final String[] requiresAll;
+	private final String[] requiresAny;
 
 	/**
 	 * Requires you to have research points of these types
 	 * */
-	public final String[] requiresPoints;
+	private final String[] requiresPoints;
 
 	public final String displayName;
 
@@ -35,8 +38,16 @@ public class TechNode {
 			String[] requiresAll, String[] requiresAny,
 			String[] requiresPoints, String displayName, String description) {
 		this.id = id;
-		this.unlocks = unlocks;
-		this.subTypeUnlocks = subTypeUnlocks;
+
+		this.unlocks = new ArrayList<Item>();
+		for (String it : unlocks) {
+			this.unlocks.add(GameData.getItemRegistry().getObject(it));
+		}
+		this.subTypeUnlocks = new ArrayList<ResearchType>();
+		for (String rt : subTypeUnlocks) {
+			this.subTypeUnlocks.add(ResearchType.getType(rt));
+		}
+
 		this.costs = costs;
 		this.requiresAll = requiresAll;
 		this.requiresAny = requiresAny;
@@ -60,6 +71,47 @@ public class TechNode {
 			String[] requiresAll, String[] requiresAny, String[] requiresPoints) {
 		this(id, type, unlocks, subTypeUnlocks, costs, requiresAll,
 				requiresAny, requiresPoints, "tech.techresearch." + id);
+	}
+
+	public List<Item> getItemsUnlocked() {
+
+		return unlocks;
+	}
+
+	public List<ResearchType> getSubtypesUnlocked() {
+
+		return subTypeUnlocks;
+	}
+
+	/**
+	 * Whether this tech is valid to be available to the player
+	 * */
+	public boolean isValid(PlayerTechDataExtendedProps ptdep) {
+		if (ptdep.hasCompleted(this)) {
+			return true;
+		}
+		for (ResearchType rt : this.costs.keySet()) {
+			if (!ptdep.hasDiscovered(rt)) {
+				return true;
+			}
+		}
+		for (String type : this.requiresPoints) {
+			if (ResearchType.getType(type).getValue(ptdep) == 0) {
+				return true;
+			}
+		}
+		for (String tid : this.requiresAll) {
+			if (!ptdep.hasCompleted(tid)) {
+				return true;
+			}
+		}
+		for (String tid : this.requiresAny) {
+			if (ptdep.hasCompleted(tid)) {
+				return false;
+			}
+		}
+
+		return this.requiresAny.length != 0;
 	}
 
 	public String costsAsString() {

@@ -9,7 +9,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
-import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
 import dinglydell.techresearch.TechNode;
 
@@ -20,8 +19,7 @@ public class CraftingReplacementHandler implements IReplacementHandler {
 
 		for (TechNode node : nodes) {
 			List<IRecipe> additions = new ArrayList<IRecipe>();
-			for (String itemId : node.unlocks) {
-				Item it = GameData.getItemRegistry().getObject(itemId);
+			for (Item it : node.getItemsUnlocked()) {
 
 				Iterator<IRecipe> iterator = CraftingManager.getInstance()
 						.getRecipeList().iterator();

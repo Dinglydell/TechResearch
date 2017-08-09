@@ -19,7 +19,6 @@ import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import dinglydell.techresearch.NodeProgress;
@@ -358,11 +357,11 @@ public class GuiResearch extends GuiScreen {
 			for (CostComponent cost : components) {
 				cost.addTooltip(tooltip);
 			}
-			if (tech.unlocks.length > 0) {
+			List<Item> unlocked = tech.getItemsUnlocked();
+			if (unlocked.size() > 0) {
 				tooltip.add(StatCollector
 						.translateToLocal("gui.techresearch.tooltip.unlocks"));
-				for (String un : tech.unlocks) {
-					Item it = GameData.getItemRegistry().getObject(un);
+				for (Item it : unlocked) {
 					tooltip.add("  "
 							+ StatCollector.translateToLocal(it
 									.getUnlocalizedName() + ".name"));

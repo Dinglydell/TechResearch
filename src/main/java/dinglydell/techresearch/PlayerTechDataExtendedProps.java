@@ -19,8 +19,6 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
-import scala.actors.threadpool.Arrays;
-import cpw.mods.fml.common.registry.GameData;
 import dinglydell.techresearch.experiment.Experiment;
 import dinglydell.techresearch.experiment.ExperimentContext;
 import dinglydell.techresearch.network.PacketTechResearch;
@@ -152,31 +150,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 		nodes.removeIf(new Predicate<TechNode>() {
 			@Override
 			public boolean test(TechNode tn) {
-				if (hasCompleted(tn)) {
-					return true;
-				}
-				for (ResearchType rt : tn.costs.keySet()) {
-					if (!hasDiscovered(rt)) {
-						return true;
-					}
-				}
-				for (String type : tn.requiresPoints) {
-					if (ResearchType.getType(type).getValue(ptdep) == 0) {
-						return true;
-					}
-				}
-				for (String tid : tn.requiresAll) {
-					if (!hasCompleted(tid)) {
-						return true;
-					}
-				}
-				for (String tid : tn.requiresAny) {
-					if (hasCompleted(tid)) {
-						return false;
-					}
-				}
-
-				return tn.requiresAny.length != 0;
+				return tn.isValid(ptdep);
 			}
 		});
 		float totalWeight = 0;
@@ -269,22 +243,21 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 			player.addChatMessage(new ChatComponentText("You have completed "
 					+ tn.getDisplayName()));
 
-			for (String item : tn.unlocks) {
-				Item it = GameData.getItemRegistry().getObject(item);
+			for (Item it : tn.getItemsUnlocked()) {
 				player.addChatMessage(new ChatComponentText(
 						"You can now create "
 								+ StatCollector.translateToLocal(it
 										.getUnlocalizedName() + ".name")));
 
 			}
-			for (String subType : tn.subTypeUnlocks) {
+			for (ResearchType subType : tn.getSubtypesUnlocked()) {
 				player.addChatMessage(new ChatComponentText(
 						"You now know that some "
-								+ ResearchType.getType(subType).getParentType()
+								+ subType.getParentType()
+										.getDiscoveredType(this)
 										.getDisplayName()
 								+ " can be specialised as "
-								+ ResearchType.getType(subType)
-										.getDisplayName()));
+								+ subType.getDisplayName()));
 			}
 
 			regenerateTechChoices();
@@ -467,9 +440,9 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 		}
 		for (Entry<TechNode, NodeProgress> node : this.nodes.entrySet()) {
 			if (this.hasCompleted(node.getKey())) {
-				List<String> unlocks = Arrays
-						.asList(node.getKey().subTypeUnlocks);
-				if (unlocks.contains(researchType.name)) {
+				List<ResearchType> unlocks = node.getKey()
+						.getSubtypesUnlocked();
+				if (unlocks.contains(researchType)) {
 					return true;
 				}
 			}
