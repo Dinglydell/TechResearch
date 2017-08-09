@@ -22,6 +22,7 @@ research.techresearch.botany=Botany
 research.techresearch.zoology=Zoology
 
 research.techresearch.metallurgy=Metallurgy
+research.techresearch.petrology=Petrology
 
 gui.techresearch.techtype.theory=Theory
 gui.techresearch.techtype.theory.desc=May lead to more breakthroughs in this field.

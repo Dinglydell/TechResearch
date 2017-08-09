@@ -9,6 +9,7 @@ import net.minecraftforge.event.entity.player.AnvilRepairEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import scala.util.Random;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent.ItemCraftedEvent;
 import dinglydell.techresearch.PlayerTechDataExtendedProps;
 import dinglydell.techresearch.experiment.Experiment;
 
@@ -72,8 +73,15 @@ public class PlayerEventHandler {
 		if (!event.entity.worldObj.isRemote) {
 			EntityPlayer player = (EntityPlayer) event.entity;
 			PlayerTechDataExtendedProps.get(player)
-					.addResearchPoints(Experiment.anvil);
+					.addResearchPoints(Experiment.anvil, 1, event.output);
 		}
 	}
 
+	@SubscribeEvent
+	public void onPlayerCraft(ItemCraftedEvent event) {
+		if (!event.player.worldObj.isRemote) {
+			PlayerTechDataExtendedProps.get(event.player)
+					.addResearchPoints(Experiment.crafting, 1, event.crafting);
+		}
+	}
 }

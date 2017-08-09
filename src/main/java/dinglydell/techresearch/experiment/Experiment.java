@@ -11,7 +11,8 @@ public class Experiment {
 	public static Experiment fall;
 	public static Experiment mobFall;
 	public static Experiment pendulum;
-	public static Experiment anvil;
+	public static ExperimentMaterial anvil;
+	public static ExperimentMaterial crafting;
 	public static Experiment farming;
 	public static Map<String, Experiment> experiments = new HashMap<String, Experiment>();
 	static {
@@ -30,9 +31,16 @@ public class Experiment {
 		pendulum = new Experiment("pendulums", pendMap);
 
 		Map<ResearchType, Double> anvilMap = new HashMap<ResearchType, Double>();
-		anvilMap.put(ResearchType.metallurgy, 5.0);
+		// anvilMap.put(ResearchType.metallurgy, 5.0);
 		anvilMap.put(ResearchType.smithing, 20.0);
-		anvil = new Experiment("anvils", anvilMap);
+		anvil = new ExperimentMaterial("anvils", anvilMap,
+				ResearchType.science, 5);
+
+		Map<ResearchType, Double> craftingMap = new HashMap<ResearchType, Double>();
+		// anvilMap.put(ResearchType.metallurgy, 5.0);
+		anvilMap.put(ResearchType.crafting, 20.0);
+		crafting = new ExperimentMaterial("crafting", craftingMap,
+				ResearchType.science, 5);
 
 		Map<ResearchType, Double> farmMap = new HashMap<ResearchType, Double>();
 		farmMap.put(ResearchType.botany, 10.0);

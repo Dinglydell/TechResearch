@@ -1,9 +1,7 @@
 package dinglydell.techresearch.experiment;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import dinglydell.techresearch.PlayerTechDataExtendedProps;
 import dinglydell.techresearch.researchtype.ItemMaterial;
@@ -12,28 +10,26 @@ import dinglydell.techresearch.researchtype.ResearchTypeMaterial;
 
 public class ExperimentMaterial extends ExperimentContext<ItemStack> {
 
-	static Map<Item, ItemMaterial> materialDatabase = new HashMap<Item, ItemMaterial>();
-
 	private double value;
 
 	private ResearchType type;
 
-	public ExperimentMaterial(String name, ResearchType baseType,
-			double initialValue) {
-		super(name);
+	public ExperimentMaterial(String name, Map<ResearchType, Double> values,
+			ResearchType superType, double initialValue) {
+		super(name, values);
 		value = initialValue;
-		this.type = baseType;
+		this.type = superType;
 	}
 
 	@Override
 	public Map<ResearchType, Double> getValues(PlayerTechDataExtendedProps ptdep,
 			double multiplier,
 			ItemStack item) {
-		Map<ResearchType, Double> values = new HashMap<ResearchType, Double>();
-		if (materialDatabase.containsKey(item.getItem())) {
+		Map<ResearchType, Double> values = getValues(ptdep, multiplier);
+		if (ItemMaterial.hasEntry(item.getItem())) {
 			addValues(values,
 					type,
-					materialDatabase.get(item.getItem()),
+					ItemMaterial.get(item.getItem()),
 					multiplier);
 		}
 

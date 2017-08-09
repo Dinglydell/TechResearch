@@ -108,8 +108,11 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 		NBTTagList rsrchPts = techData.getTagList(RESEARCH_POINTS, 10);
 		for (int i = 0; i < rsrchPts.tagCount(); i++) {
 			NBTTagCompound rTag = rsrchPts.getCompoundTagAt(i);
-			researchPoints.put(ResearchType.getType(rTag
-					.getString(RESEARCH_NAME)), rTag.getDouble(QUANTITY));
+			ResearchType rt = ResearchType.getType(rTag
+					.getString(RESEARCH_NAME));
+			if (rt != null) {
+				researchPoints.put(rt, rTag.getDouble(QUANTITY));
+			}
 		}
 		getNodes().clear();
 		NBTTagList techNodes = techData.getTagList(TECH_NODES, 10);
@@ -371,7 +374,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 	}
 
 	/**
-	 * 
+	 * Add resarch points with a context
 	 * */
 	public <T> void addResearchPoints(ExperimentContext<T> exp,
 			double multiplier,

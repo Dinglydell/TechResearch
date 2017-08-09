@@ -5,11 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import dinglydell.techresearch.PlayerTechDataExtendedProps;
-import dinglydell.techresearch.TechResearch;
-
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
+import dinglydell.techresearch.PlayerTechDataExtendedProps;
+import dinglydell.techresearch.TechResearch;
 
 public class ResearchType {
 	private static Map<String, ResearchType> researchTypes = new HashMap<String, ResearchType>();
@@ -35,9 +34,11 @@ public class ResearchType {
 			ResearchType.science);
 	public static ResearchType materials = new ResearchType("materials",
 			ResearchType.science);
+	public static ResearchType geology = new ResearchType("geology",
+			ResearchType.science);
 
 	// engineering
-	public static ResearchType crafting = new ResearchType("crafting",
+	public static ResearchType processing = new ResearchType("processing",
 			ResearchType.engineering);
 
 	// physics
@@ -53,12 +54,17 @@ public class ResearchType {
 			ResearchType.biology);
 
 	// materials
-	public static ResearchType metallurgy = new ResearchType("metallurgy",
-			ResearchType.materials);
+	public static ResearchType metallurgy = new ResearchTypeMaterial(
+			"metallurgy", ResearchType.materials, ItemMaterial.metal);
 
-	// crafting
+	public static ResearchType petrology = new ResearchTypeMaterial(
+			"petrology", ResearchType.geology, ItemMaterial.stone);
+
+	// processing
+	public static ResearchType crafting = new ResearchType("crafting",
+			ResearchType.processing);
 	public static ResearchType smithing = new ResearchType("smithing",
-			ResearchType.crafting);
+			ResearchType.processing);
 
 	public final String name;
 	public final ResourceLocation icon;
