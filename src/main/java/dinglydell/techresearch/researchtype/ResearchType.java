@@ -9,6 +9,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import dinglydell.techresearch.PlayerTechDataExtendedProps;
 import dinglydell.techresearch.TechResearch;
+import dinglydell.techresearch.util.MapUtils;
 
 public class ResearchType {
 	private static Map<String, ResearchType> researchTypes = new HashMap<String, ResearchType>();
@@ -101,7 +102,7 @@ public class ResearchType {
 
 	public double getValue(PlayerTechDataExtendedProps ptDep) {
 		if (isBaseType()) {
-			return ptDep.researchPoints.getOrDefault(this, 0.0);
+			return MapUtils.getOrDefault(ptDep.researchPoints, this, 0.0);
 		}
 		double value = 0.0;
 		for (ResearchType child : childTypes) {
@@ -116,7 +117,7 @@ public class ResearchType {
 	/** Display value will not add child values if child type is discovered */
 	public double getDisplayValue(PlayerTechDataExtendedProps ptDep) {
 		if (isBaseType()) {
-			return ptDep.researchPoints.getOrDefault(this, 0.0);
+			return MapUtils.getOrDefault(ptDep.researchPoints, this, 0.0);
 		}
 		double value = 0.0;
 		for (ResearchType child : childTypes) {

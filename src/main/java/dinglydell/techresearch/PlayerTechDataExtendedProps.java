@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Predicate;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,6 +25,7 @@ import dinglydell.techresearch.researchtype.ResearchType;
 import dinglydell.techresearch.techtree.NodeProgress;
 import dinglydell.techresearch.techtree.TechNode;
 import dinglydell.techresearch.techtree.TechTree;
+import dinglydell.techresearch.util.MapUtils;
 
 public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 
@@ -148,14 +148,21 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 
 	public void regenerateTechChoices() {
 		availableNodes.clear();
-		List<TechNode> nodes = new ArrayList<TechNode>(TechTree.nodes.values());
-		final PlayerTechDataExtendedProps ptdep = this;
-		nodes.removeIf(new Predicate<TechNode>() {
-			@Override
-			public boolean test(TechNode tn) {
-				return tn.isValid(ptdep);
+		// List<TechNode> allNodes = new
+		// ArrayList<TechNode>(TechTree.nodes.values());
+		// final PlayerTechDataExtendedProps ptdep = this;
+		List<TechNode> nodes = new ArrayList<TechNode>();
+		for (TechNode tn : TechTree.nodes.values()) {
+			if (tn.isValid(this)) {
+				nodes.add(tn);
 			}
-		});
+		}
+		// nodes.removeIf(new Predicate<TechNode>() {
+		// @Override
+		// public boolean test(TechNode tn) {
+		// return tn.isValid(ptdep);
+		// }
+		// });
 		float totalWeight = 0;
 		// TODO: better varying tech weight
 		Map<TechNode, Double> weights = new HashMap<TechNode, Double>();
@@ -505,7 +512,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 
 	public TechNode getAvailableNode(String node) {
 
-		return availableNodes.getOrDefault(node, null);
+		return MapUtils.getOrDefault(availableNodes, node, null);
 	}
 
 	public Collection<TechNode> getAvailableNodes() {

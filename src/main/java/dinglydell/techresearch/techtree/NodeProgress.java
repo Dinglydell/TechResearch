@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import dinglydell.techresearch.researchtype.ResearchType;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import dinglydell.techresearch.researchtype.ResearchType;
+import dinglydell.techresearch.util.MapUtils;
 
 public class NodeProgress {
 
@@ -53,7 +53,8 @@ public class NodeProgress {
 
 	public boolean isComplete() {
 		for (Entry<ResearchType, Double> cost : node.costs.entrySet()) {
-			if (progress.getOrDefault(cost.getKey(), 0.0) < cost.getValue()) {
+			if (MapUtils.getOrDefault(progress, cost.getKey(), 0.0) < cost
+					.getValue()) {
 				return false;
 			}
 		}
@@ -62,7 +63,7 @@ public class NodeProgress {
 
 	public double getProgress(ResearchType type) {
 
-		return progress.getOrDefault(type, 0.0);
+		return MapUtils.getOrDefault(progress, type, 0.0);
 	}
 
 	public double getTotalProgress() {
