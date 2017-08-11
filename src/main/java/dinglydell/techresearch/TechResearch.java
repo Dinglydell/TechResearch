@@ -32,6 +32,7 @@ import dinglydell.techresearch.network.PacketTechResearch;
 import dinglydell.techresearch.recipe.CraftingReplacementHandler;
 import dinglydell.techresearch.researchtype.ResearchType;
 import dinglydell.techresearch.techtree.TechNode;
+import dinglydell.techresearch.techtree.TechNodeType;
 import dinglydell.techresearch.techtree.TechTree;
 
 @Mod(modid = TechResearch.MODID, version = TechResearch.VERSION)
@@ -40,6 +41,9 @@ public class TechResearch {
 	public static final String VERSION = "0.1";
 
 	public static SimpleNetworkWrapper snw;
+	/** Default for default tech entry in config */
+	public static boolean defaultTech = true;
+	private Configuration techtreeConfig;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
@@ -47,7 +51,7 @@ public class TechResearch {
 
 		registerPacketHandlers();
 		TechKeyBindings.RegisterKeyBindings();
-		readConfig(event);
+		setConfigObj(event);
 
 		registerBlocks();
 	}
@@ -59,40 +63,45 @@ public class TechResearch {
 
 	}
 
-	private void readConfig(FMLPreInitializationEvent event) {
-		Configuration techtree = new Configuration(new File(
+	private void setConfigObj(FMLPreInitializationEvent event) {
+		techtreeConfig = new Configuration(new File(
 				event.getModConfigurationDirectory(), MODID + "/TechTree.cfg"));
-		techtree.load();
-		boolean defaults = techtree
+	}
+
+	private void readConfig() {
+
+		techtreeConfig.load();
+		boolean defaults = techtreeConfig
 				.getBoolean("defaultTech",
 						"General",
-						true,
+						defaultTech,
 						"Determines whether the mod should use the default tech. If set to true, the mod will auto-(re)generate any missing configuration for the default techtree");
 		if (defaults) {
-			setDefaults(techtree);
+			setDefaults(techtreeConfig);
 		}
-		Set<String> categs = techtree.getCategoryNames();
+		Set<String> categs = techtreeConfig.getCategoryNames();
 		for (String c : categs) {
 			if (c.equals("general")) {
 				continue;
 			}
-			String[] unlocks = techtree.getStringList("unlocks",
+			String[] unlocks = techtreeConfig.getStringList("unlocks",
 					c,
 					new String[] {},
 					"Item IDs unlocked by this node");
-			String[] subTypeUnlocks = techtree.getStringList("subTypeUnlocks",
-					c,
-					new String[] {},
-					"Types of research points discovered by this node");
-			String type = techtree
+			String[] subTypeUnlocks = techtreeConfig
+					.getStringList("subTypeUnlocks",
+							c,
+							new String[] {},
+							"Types of research points discovered by this node");
+			String type = techtreeConfig
 					.getString("type",
 							c,
 							"application",
 							"theory or application. Generally theories are prerequisites to application techs which provide something useful.");
 			Map<ResearchType, Double> costs = new HashMap<ResearchType, Double>();
 			for (ResearchType rt : ResearchType.getTypes().values()) {
-				if (techtree.hasKey(c, rt.name)) {
-					double value = (double) techtree
+				if (techtreeConfig.hasKey(c, rt.name)) {
+					double value = (double) techtreeConfig
 							.getFloat(rt.name,
 									c,
 									0,
@@ -127,32 +136,35 @@ public class TechResearch {
 			// 0,
 			// Float.MAX_VALUE,
 			// "The amount physics research is likely to contribute towards discovering this node");
-			String[] requiresAll = techtree
+			String[] requiresAll = techtreeConfig
 					.getStringList("requiresAll",
 							c,
 							new String[] {},
 							"The node requires all of these nodes in order to be unlocked");
-			String[] requiresAny = techtree.getStringList("requiresAny",
+			String[] requiresAny = techtreeConfig.getStringList("requiresAny",
 					c,
 					new String[] {},
 					"The node requires any of these nodes to be unlocked");
-			String[] requiresPoints = techtree
+			String[] requiresPoints = techtreeConfig
 					.getStringList("requiresPoints",
 							c,
 							new String[] {},
 							"The node requires the player to have research points for all of these types. This is usually used for unlocking new research point types (so you can only get the tech to unlock physics if you unknowingly have physics points)");
-			String displayName = techtree.getString("displayString",
+			String displayName = techtreeConfig.getString("displayString",
 					c,
 					"tech.techresearch." + c,
 					"Localisation string or display string of the tech");
 
-			TechTree.AddTechNode(new TechNode(c, type, costs)
-					.setDisplayName(displayName)
+			TechTree.AddTechNode(new TechNode(c, TechNodeType.types.get(type),
+					costs).setUnlocalisedName(displayName)
 					.addItemsUnlocked(Arrays.asList(unlocks))
-					.addSubtypesUnlocked(Arrays.asList(subTypeUnlocks)));
+					.addSubtypesUnlocked(Arrays.asList(subTypeUnlocks))
+					.addRequirementsAll(Arrays.asList(requiresAll))
+					.addRequirementsAny(Arrays.asList(requiresAny))
+					.addRequirementsPoints(Arrays.asList(requiresPoints)));
 
 		}
-		techtree.save();
+		techtreeConfig.save();
 	}
 
 	private void registerPacketHandlers() {
@@ -176,7 +188,9 @@ public class TechResearch {
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		TechTree.addHandler(new CraftingReplacementHandler());
-
+		if (TechResearchSettings.defaultTree) {
+			readConfig();
+		}
 		registerRecipes();
 	}
 

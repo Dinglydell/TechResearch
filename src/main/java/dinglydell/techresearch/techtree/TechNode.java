@@ -29,13 +29,14 @@ public class TechNode {
 	 * */
 	private final List<ResearchType> requiresPoints;
 
-	public String displayName;
+	public String unlocalisedName;
 
 	public String description;
 
 	public TechNodeType type;
 
-	public TechNode(String id, String type, Map<ResearchType, Double> costs) {
+	public TechNode(String id, TechNodeType type,
+			Map<ResearchType, Double> costs) {
 		// , String[] unlocks,
 		// String[] subTypeUnlocks,,
 		// String[] requiresAll, String[] requiresAny,
@@ -54,17 +55,17 @@ public class TechNode {
 		// for (String rt : requiresPoints) {
 		// this.requiresPoints.add(ResearchType.getType(rt));
 		// }
-		this.displayName = "tech.techresearch." + id;
+		this.unlocalisedName = "tech.techresearch." + id;
 		this.description = "tech.techresearch." + id + ".desc";
-		this.type = TechNodeType.types.get(type);
+		this.type = type;
 	}
 
 	/**
 	 * Sets the localisation string for the display name. Default is
 	 * tech.techresearch.NODEID
 	 * */
-	public TechNode setDisplayName(String name) {
-		this.displayName = name;
+	public TechNode setUnlocalisedName(String name) {
+		this.unlocalisedName = name;
 		return this;
 	}
 
@@ -336,11 +337,11 @@ public class TechNode {
 
 	public String getDisplayName() {
 
-		return StatCollector.translateToLocal(displayName);
+		return StatCollector.translateToLocal(unlocalisedName);
 	}
 
 	public String getDescription() {
-		return StatCollector.translateToLocal(displayName + ".desc");
+		return StatCollector.translateToLocal(unlocalisedName + ".desc");
 	}
 
 }

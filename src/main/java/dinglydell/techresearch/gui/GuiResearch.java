@@ -64,7 +64,7 @@ public class GuiResearch extends GuiScreen {
 		// i = 0;
 		components.clear();
 
-		ResearchType rt = ResearchType.getStartingType();
+		ResearchType rt = ResearchType.getTopType();
 		addComponents(rt, offsetLeft + textX, offsetTop + textY);
 
 	}

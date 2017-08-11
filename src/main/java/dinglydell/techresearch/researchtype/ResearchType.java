@@ -9,6 +9,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import dinglydell.techresearch.PlayerTechDataExtendedProps;
 import dinglydell.techresearch.TechResearch;
+import dinglydell.techresearch.techtree.TechNode;
+import dinglydell.techresearch.techtree.TechNodeType;
 import dinglydell.techresearch.util.MapUtils;
 
 public class ResearchType {
@@ -18,7 +20,7 @@ public class ResearchType {
 	 * the top of the tree (with no parent)
 	 */
 	public static ResearchType research = new ResearchType("research")
-			.setAsStartingType();
+			.setAsStartingType().setAsTopType();
 	/** Splits into biology & physics */
 	public static ResearchType science = new ResearchType("science",
 			ResearchType.research);
@@ -66,6 +68,7 @@ public class ResearchType {
 			ResearchType.processing);
 	public static ResearchType smithing = new ResearchType("smithing",
 			ResearchType.processing);
+	private static boolean isTopType;
 
 	public final String name;
 	public final ResourceLocation icon;
@@ -96,8 +99,12 @@ public class ResearchType {
 	}
 
 	public String getDisplayName() {
-		return StatCollector.translateToLocal("research.techresearch." + name);
+		return StatCollector.translateToLocal(getLocalisationString());
 
+	}
+
+	public String getLocalisationString() {
+		return "research.techresearch." + name;
 	}
 
 	public double getValue(PlayerTechDataExtendedProps ptDep) {
@@ -139,6 +146,21 @@ public class ResearchType {
 	 */
 	public ResearchType setAsStartingType() {
 		this.isStartType = true;
+		return this;
+	}
+
+	/**
+	 * The type that all other types are children of. There can only be one of
+	 * these.
+	 * */
+	public ResearchType setAsTopType() {
+		if (getTopType() != null) {
+			throw new IllegalArgumentException(
+					"Someone tried to set "
+							+ this.name
+							+ " as the top level type when the top level type already exists!");
+		}
+		this.isTopType = true;
 		return this;
 	}
 
@@ -209,9 +231,9 @@ public class ResearchType {
 		return this.parentType != null;
 	}
 
-	public static ResearchType getStartingType() {
+	public static ResearchType getTopType() {
 		for (Map.Entry<String, ResearchType> type : researchTypes.entrySet()) {
-			if (type.getValue().isStartType) {
+			if (type.getValue().isTopType) {
 				return type.getValue();
 			}
 		}
@@ -229,5 +251,44 @@ public class ResearchType {
 			discoveredType = discoveredType.getParentType();
 		}
 		return discoveredType;
+	}
+
+	/**
+	 * Creates a node to unlock this type.
+	 * 
+	 * The node will be a "theory", will require the player to have points of
+	 * the type and will be set to unlock this type. The node will cost 20
+	 * research of the parent type
+	 * */
+	public TechNode generateTechNode() {
+		Map<ResearchType, Double> costs = new HashMap<ResearchType, Double>();
+		costs.put(this.parentType, 20.0);
+		return generateTechNode(costs);
+
+	}
+
+	/**
+	 * Creates a node to unlock this type with a specified cost.
+	 * 
+	 * The node will be a "theory", will require the player to have points of
+	 * the type and will be set to unlock this type
+	 * */
+	public TechNode generateTechNode(Map<ResearchType, Double> costs) {
+		return new TechNode(this.name, TechNodeType.types.get("theory"), costs)
+				.addRequirementPoints(this).addSubtypeUnlocked(this)
+				.setUnlocalisedName(this.getLocalisationString());
+	}
+
+	/**
+	 * Creates a node to unlock this type with a specified cost and type.
+	 * 
+	 * The node will require the player to have points of the type and will be
+	 * set to unlock this type
+	 * */
+	public TechNode generateTechNode(Map<ResearchType, Double> costs,
+			TechNodeType type) {
+		return new TechNode(this.name, type, costs).addRequirementPoints(this)
+				.addSubtypeUnlocked(this)
+				.setUnlocalisedName(this.getLocalisationString());
 	}
 }
