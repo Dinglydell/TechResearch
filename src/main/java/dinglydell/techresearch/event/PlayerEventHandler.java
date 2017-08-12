@@ -4,14 +4,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.living.LivingFallEvent;
-import net.minecraftforge.event.entity.player.AnvilRepairEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import scala.util.Random;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent.ItemCraftedEvent;
 import dinglydell.techresearch.PlayerTechDataExtendedProps;
-import dinglydell.techresearch.experiment.Experiment;
 
 public class PlayerEventHandler {
 
@@ -50,38 +45,4 @@ public class PlayerEventHandler {
 		}
 	}
 
-	@SubscribeEvent
-	public void onEntityFall(LivingFallEvent event) {
-		if (event.entity instanceof EntityPlayer
-				&& !event.entity.worldObj.isRemote) {
-			EntityPlayer player = (EntityPlayer) event.entity;
-			if (event.distance >= 4) {
-				System.out.println("player fell " + event.distance + " blocks");
-				Random rnd = new Random();
-				if (rnd.nextDouble() < event.distance / 10) {
-					PlayerTechDataExtendedProps.get(player)
-							.addResearchPoints(Experiment.fall,
-									Math.min(Math.floor(event.distance), 20));
-				}
-
-			}
-		}
-	}
-
-	@SubscribeEvent
-	public void onPlayerAnvil(AnvilRepairEvent event) {
-		if (!event.entity.worldObj.isRemote) {
-			EntityPlayer player = (EntityPlayer) event.entity;
-			PlayerTechDataExtendedProps.get(player)
-					.addResearchPoints(Experiment.anvil, 1, event.output);
-		}
-	}
-
-	@SubscribeEvent
-	public void onPlayerCraft(ItemCraftedEvent event) {
-		if (!event.player.worldObj.isRemote) {
-			PlayerTechDataExtendedProps.get(event.player)
-					.addResearchPoints(Experiment.crafting, 1, event.crafting);
-		}
-	}
 }
