@@ -286,7 +286,7 @@ public class TechNode {
 	 * */
 	public boolean isValid(PlayerTechDataExtendedProps ptdep) {
 		if (ptdep.hasCompleted(this)) {
-			return true;
+			return false;
 		}
 		for (ResearchType rt : this.costs.keySet()) {
 			if (!ptdep.hasDiscovered(rt)) {
