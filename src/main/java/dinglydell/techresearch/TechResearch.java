@@ -47,13 +47,14 @@ public class TechResearch {
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		registerEventHandlers();
 
 		registerPacketHandlers();
 		TechKeyBindings.RegisterKeyBindings();
 		setConfigObj(event);
 
 		registerBlocks();
+		TechResearchSettings.disableDefaultExperiments();
+		TechResearchSettings.disableDefaultTree();
 	}
 
 	private void registerBlocks() {
@@ -155,7 +156,7 @@ public class TechResearch {
 					"tech.techresearch." + c,
 					"Localisation string or display string of the tech");
 
-			TechTree.AddTechNode(new TechNode(c, TechNodeType.types.get(type),
+			TechTree.addTechNode(new TechNode(c, TechNodeType.types.get(type),
 					costs).setUnlocalisedName(displayName)
 					.addItemsUnlocked(Arrays.asList(unlocks))
 					.addSubtypesUnlocked(Arrays.asList(subTypeUnlocks))
@@ -181,12 +182,15 @@ public class TechResearch {
 	}
 
 	private void registerEventHandlers() {
-		MinecraftForge.EVENT_BUS.register(new PlayerEventHandler());
+		if (TechResearchSettings.defaultExps) {
+			MinecraftForge.EVENT_BUS.register(new PlayerEventHandler());
+		}
 
 	}
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
+		registerEventHandlers();
 		TechTree.addHandler(new CraftingReplacementHandler());
 		if (TechResearchSettings.defaultTree) {
 			readConfig();

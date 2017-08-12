@@ -64,3 +64,22 @@ processResources
         exclude 'mcmod.info'
     }
 }
+ //Creates a compiled de-obfuscated jar
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    appendix = 'deobf'
+	
+	manifest.attributes(
+            'FMLCorePlugin': 'com.bioxx.tfc.TFCASMLoadingPlugin',
+			'FMLCorePluginContainsFMLMod': 'true',
+			'FMLAT': 'tfc_at.cfg'
+    )
+}
+ //creates a jar containing only the src
+task sourceJar(type: Jar) {
+    from sourceSets.main.allSource
+    appendix = 'src'
+}
+
+tasks.build.dependsOn('sourceJar', 'deobfJar')
+

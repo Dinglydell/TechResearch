@@ -14,6 +14,7 @@ import dinglydell.techresearch.techtree.TechNodeType;
 import dinglydell.techresearch.util.MapUtils;
 
 public class ResearchType {
+	private static ResearchType topType = null;
 	private static Map<String, ResearchType> researchTypes = new HashMap<String, ResearchType>();
 	/**
 	 * Splits into Science & Engineering. NOTE: This should be the only type at
@@ -24,7 +25,7 @@ public class ResearchType {
 	/** Splits into biology & physics */
 	public static ResearchType science = new ResearchType("science",
 			ResearchType.research);
-	/** Base type (for now) */
+	/** "Splits" into processing */
 	public static ResearchType engineering = new ResearchType("engineering",
 			ResearchType.research);
 
@@ -68,7 +69,6 @@ public class ResearchType {
 			ResearchType.processing);
 	public static ResearchType smithing = new ResearchType("smithing",
 			ResearchType.processing);
-	private static boolean isTopType;
 
 	public final String name;
 	public final ResourceLocation icon;
@@ -160,7 +160,7 @@ public class ResearchType {
 							+ this.name
 							+ " as the top level type when the top level type already exists!");
 		}
-		this.isTopType = true;
+		topType = this;
 		return this;
 	}
 
@@ -232,12 +232,8 @@ public class ResearchType {
 	}
 
 	public static ResearchType getTopType() {
-		for (Map.Entry<String, ResearchType> type : researchTypes.entrySet()) {
-			if (type.getValue().isTopType) {
-				return type.getValue();
-			}
-		}
-		return null;
+
+		return topType;
 
 	}
 

@@ -290,26 +290,26 @@ public class TechNode {
 		}
 		for (ResearchType rt : this.costs.keySet()) {
 			if (!ptdep.hasDiscovered(rt)) {
-				return true;
+				return false;
 			}
 		}
 		for (ResearchType type : this.requiresPoints) {
 			if (type.getValue(ptdep) == 0) {
-				return true;
+				return false;
 			}
 		}
 		for (TechNode tn : this.requiresAll) {
 			if (!ptdep.hasCompleted(tn)) {
-				return true;
+				return false;
 			}
 		}
 		for (TechNode tn : this.requiresAny) {
 			if (ptdep.hasCompleted(tn)) {
-				return false;
+				return true;
 			}
 		}
 
-		return this.requiresAny.size() != 0;
+		return this.requiresAny.size() == 0;
 	}
 
 	public String costsAsString() {

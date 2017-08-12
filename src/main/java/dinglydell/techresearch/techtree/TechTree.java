@@ -12,10 +12,17 @@ public class TechTree {
 
 	static List<IReplacementHandler> handlers = new ArrayList<IReplacementHandler>();
 
-	public static void AddTechNode(TechNode node) {
+	/**
+	 * Register a node with the tree.
+	 * */
+	public static void addTechNode(TechNode node) {
 		nodes.put(node.id, node);
 	}
 
+	/**
+	 * Adds an IReplacementHandler. These handle the replacement of recipes with
+	 * recipes that require tech.
+	 * */
 	public static void addHandler(IReplacementHandler handler) {
 		handlers.add(handler);
 	}
