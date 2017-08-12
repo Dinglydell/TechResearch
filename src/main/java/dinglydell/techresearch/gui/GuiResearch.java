@@ -70,14 +70,17 @@ public class GuiResearch extends GuiScreen {
 	}
 
 	private int addComponents(ResearchType rt, int offsetLeft, int offsetTop) {
-		addComponent(rt, offsetLeft, offsetTop);
-		int offsetChange = 16;
-		offsetTop += offsetChange;
-		offsetLeft += 4;
+		if (ptdep.hasDiscovered(rt)) {
+			addComponent(rt, offsetLeft, offsetTop);
+
+			int offsetChange = 16;
+			offsetTop += offsetChange;
+			offsetLeft += 4;
+		}
 		for (ResearchType child : rt.getChildren()) {
-			if (ptdep.hasDiscovered(child)) {
-				offsetTop = addComponents(child, offsetLeft, offsetTop);
-			}
+
+			offsetTop = addComponents(child, offsetLeft, offsetTop);
+
 		}
 
 		return offsetTop;
