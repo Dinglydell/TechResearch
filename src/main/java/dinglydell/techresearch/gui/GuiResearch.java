@@ -55,9 +55,10 @@ public class GuiResearch extends GuiScreen {
 		int offsetLeft = (width - GUI_WIDTH) / 2;
 		int offsetTop = (height - GUI_HEIGHT) / 2;
 		for (TechNode node : ptdep.getAvailableNodes()) {
-			buttonList.add(new OptionButton(i++,
-					offsetLeft + POINTS_WIDTH + 10, offsetTop + 8 + (i - 1)
-							* 39, 160, 30, node, ptdep.getProgress(node)));
+			buttonList
+					.add(new OptionButton(i++, offsetLeft + POINTS_WIDTH + 10,
+							offsetTop + 8 + (i - 1) * 39, 160, 30, node, ptdep
+									.getProgress(node), ptdep));
 		}
 		int textX = 8;
 		int textY = 8;
@@ -100,7 +101,7 @@ public class GuiResearch extends GuiScreen {
 	private void addComponent(ResearchType rt, int offsetLeft, int offsetTop) {
 
 		components.add(new CostComponent(mc, offsetLeft, offsetTop, rt, Math
-				.round(rt.getValue(ptdep) * 100) / 100.0));
+				.round(rt.getValue(ptdep) * 100) / 100.0, ptdep));
 
 	}
 
@@ -247,13 +248,14 @@ public class GuiResearch extends GuiScreen {
 		private int posX;
 		private int posY;
 		private Minecraft mc;
+		private PlayerTechDataExtendedProps ptdep;
 
 		public CostComponent(Minecraft mc, int x, int y, ResearchType type,
-				double cost) {
+				double cost, PlayerTechDataExtendedProps ptdep) {
 			this.mc = mc;
 			this.type = type;
 			this.cost = cost;
-
+			this.ptdep = ptdep;
 			posX = x;
 			posY = y;
 
@@ -317,14 +319,16 @@ public class GuiResearch extends GuiScreen {
 
 					parent = parent.getParentType();
 				}
-
+				int indentNum = 1;
 				for (int i = 1; i <= parents.size(); i++) {
 					parent = parents.get(parents.size() - i);
-
-					char[] indent = new char[i];
-					Arrays.fill(indent, ' ');
-					String indentString = new String(indent);
-					tooltip.add(indentString + "-" + parent.getDisplayName());
+					if (ptdep.hasDiscovered(parent)) {
+						char[] indent = new char[indentNum++];
+						Arrays.fill(indent, ' ');
+						String indentString = new String(indent);
+						tooltip.add(indentString + "-"
+								+ parent.getDisplayName());
+					}
 				}
 			}
 
@@ -339,7 +343,8 @@ public class GuiResearch extends GuiScreen {
 		private List<CostComponent> components = new ArrayList<CostComponent>();
 
 		public OptionButton(int id, int x, int y, int width, int height,
-				TechNode tech, NodeProgress progress) {
+				TechNode tech, NodeProgress progress,
+				PlayerTechDataExtendedProps ptdep) {
 			super(id, x, y, width, height, tech.getDisplayName());
 			this.tech = tech;
 			this.progress = progress;
@@ -349,7 +354,8 @@ public class GuiResearch extends GuiScreen {
 			int costX = 2 * (x + 1);
 			for (Entry<ResearchType, Double> cost : tech.costs.entrySet()) {
 				CostComponent cc = new CostComponent(mc, costX,
-						2 * (y + height - 8), cost.getKey(), cost.getValue());
+						2 * (y + height - 8), cost.getKey(), cost.getValue(),
+						ptdep);
 				components.add(cc);
 				costX += cc.getWidth() + 2;
 			}
