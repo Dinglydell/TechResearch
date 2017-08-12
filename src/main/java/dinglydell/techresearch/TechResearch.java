@@ -23,6 +23,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import dinglydell.techresearch.block.BlockPendulum;
 import dinglydell.techresearch.block.TRBlocks;
+import dinglydell.techresearch.event.ExperimentEventHandler;
 import dinglydell.techresearch.event.PlayerEventHandler;
 import dinglydell.techresearch.event.TechKeyBindings;
 import dinglydell.techresearch.network.PacketBuyTech;
@@ -182,8 +183,9 @@ public class TechResearch {
 	}
 
 	private void registerEventHandlers() {
+		MinecraftForge.EVENT_BUS.register(new PlayerEventHandler());
 		if (TechResearchSettings.defaultExps) {
-			MinecraftForge.EVENT_BUS.register(new PlayerEventHandler());
+			MinecraftForge.EVENT_BUS.register(new ExperimentEventHandler());
 		}
 
 	}
