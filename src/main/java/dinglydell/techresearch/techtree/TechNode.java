@@ -253,7 +253,7 @@ public class TechNode {
 	 * available
 	 * */
 	public TechNode addSubtypeUnlocked(ResearchType type) {
-		this.requiresPoints.add(type);
+		this.subTypeUnlocks.add(type);
 		return this;
 	}
 
