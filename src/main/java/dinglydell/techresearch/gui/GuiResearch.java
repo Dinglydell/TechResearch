@@ -12,7 +12,6 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
@@ -366,14 +365,12 @@ public class GuiResearch extends GuiScreen {
 			for (CostComponent cost : components) {
 				cost.addTooltip(tooltip);
 			}
-			List<Item> unlocked = tech.getItemsUnlocked();
+			List<String> unlocked = tech.getUnlockedDisplay();
 			if (unlocked.size() > 0) {
 				tooltip.add(StatCollector
 						.translateToLocal("gui.techresearch.tooltip.unlocks"));
-				for (Item it : unlocked) {
-					tooltip.add("  "
-							+ StatCollector.translateToLocal(it
-									.getUnlocalizedName() + ".name"));
+				for (String un : unlocked) {
+					tooltip.add("  " + un);
 				}
 			}
 			String typeDesc = tech.type.getDescription();

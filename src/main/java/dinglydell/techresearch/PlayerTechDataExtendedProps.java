@@ -10,12 +10,10 @@ import java.util.Map.Entry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
 import dinglydell.techresearch.experiment.Experiment;
@@ -253,11 +251,9 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 			player.addChatMessage(new ChatComponentText("You have completed "
 					+ tn.getDisplayName()));
 
-			for (Item it : tn.getItemsUnlocked()) {
+			for (String str : tn.getUnlockedDisplay()) {
 				player.addChatMessage(new ChatComponentText(
-						"You can now create "
-								+ StatCollector.translateToLocal(it
-										.getUnlocalizedName() + ".name")));
+						"You have unlocked " + str));
 
 			}
 			for (ResearchType subType : tn.getSubtypesUnlocked()) {

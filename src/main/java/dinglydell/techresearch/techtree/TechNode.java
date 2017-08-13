@@ -271,9 +271,21 @@ public class TechNode {
 	// this(id, type, costs, "tech.techresearch." + id);
 	// }
 
+	/** Returns a list of items unlocked by this node */
 	public List<Item> getItemsUnlocked() {
-
 		return unlocks;
+	}
+
+	/** Returns a list of localised strings for each thing the node unlocks */
+	public List<String> getUnlockedDisplay() {
+
+		List<String> uns = new ArrayList<String>();
+		for (Item it : unlocks) {
+			uns.add(StatCollector.translateToLocal(it.getUnlocalizedName()
+					+ ".name"));
+		}
+
+		return uns;
 	}
 
 	public List<ResearchType> getSubtypesUnlocked() {
