@@ -17,8 +17,8 @@ import dinglydell.techresearch.techtree.NodeProgress;
 import dinglydell.techresearch.techtree.TechNode;
 
 public class RecipeResearchable implements IRecipe {
-	private static final Field eventHandlerField = ReflectionHelper.findField(
-			InventoryCrafting.class, "eventHandler");
+	private static final Field eventHandlerField = ReflectionHelper
+			.findField(InventoryCrafting.class, "eventHandler");
 	private static final Field containerPlayerPlayerField = ReflectionHelper
 			.findField(ContainerPlayer.class, "thePlayer");
 	private static final Field slotCraftingPlayerField = ReflectionHelper
@@ -53,6 +53,9 @@ public class RecipeResearchable implements IRecipe {
 
 	protected boolean hasTech(InventoryCrafting craft) {
 		EntityPlayer player = findPlayer(craft);
+		if (player == null) {
+			return false;
+		}
 		PlayerTechDataExtendedProps ptdep = PlayerTechDataExtendedProps
 				.get(player);
 		if (!ptdep.getNodes().containsKey(tech)) {
