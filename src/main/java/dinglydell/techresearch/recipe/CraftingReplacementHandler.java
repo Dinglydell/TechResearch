@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
@@ -19,7 +18,7 @@ public class CraftingReplacementHandler implements IReplacementHandler {
 
 		for (TechNode node : nodes) {
 			List<IRecipe> additions = new ArrayList<IRecipe>();
-			for (Item it : node.getItemsUnlocked()) {
+			for (ItemStack it : node.getItemsUnlocked()) {
 
 				Iterator<IRecipe> iterator = CraftingManager.getInstance()
 						.getRecipeList().iterator();
@@ -30,7 +29,8 @@ public class CraftingReplacementHandler implements IReplacementHandler {
 						continue;
 					ItemStack output = recipe.getRecipeOutput();
 
-					if (output != null && output.getItem() == it) {
+					if (output != null && output.getItem() == it.getItem()
+							&& output.getItemDamage() == it.getItemDamage()) {
 						iterator.remove();
 						additions.add(recipe);
 					}

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import cpw.mods.fml.common.registry.GameData;
 import dinglydell.techresearch.PlayerTechDataExtendedProps;
@@ -16,7 +17,7 @@ public class TechNode {
 
 	public final String id;
 
-	private final List<Item> unlocks;
+	private final List<ItemStack> unlocks;
 	private final List<ResearchType> subTypeUnlocks;
 
 	public final Map<ResearchType, Double> costs;
@@ -44,7 +45,7 @@ public class TechNode {
 
 		this.id = id;
 
-		this.unlocks = new ArrayList<Item>();
+		this.unlocks = new ArrayList<ItemStack>();
 
 		this.subTypeUnlocks = new ArrayList<ResearchType>();
 
@@ -218,7 +219,17 @@ public class TechNode {
 	 * until the node is unlocked.
 	 * */
 	public TechNode addItemUnlocked(Item item) {
+		return addItemUnlocked(new ItemStack(item));
+	}
 
+	/**
+	 * Adds an item that will have its recipe unlocked by this tech node.
+	 * 
+	 * Once a tech node is set to unlock an item, its recipe will automatically
+	 * be unavailable in all methods defined by registered IReplacementHandlers
+	 * until the node is unlocked.
+	 * */
+	public TechNode addItemUnlocked(ItemStack item) {
 		this.unlocks.add(item);
 		return this;
 	}
@@ -272,7 +283,7 @@ public class TechNode {
 	// }
 
 	/** Returns a list of items unlocked by this node */
-	public List<Item> getItemsUnlocked() {
+	public List<ItemStack> getItemsUnlocked() {
 		return unlocks;
 	}
 
@@ -280,7 +291,7 @@ public class TechNode {
 	public List<String> getUnlockedDisplay() {
 
 		List<String> uns = new ArrayList<String>();
-		for (Item it : unlocks) {
+		for (ItemStack it : unlocks) {
 			uns.add(StatCollector.translateToLocal(it.getUnlocalizedName()
 					+ ".name"));
 		}

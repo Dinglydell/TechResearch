@@ -356,7 +356,7 @@ public class GuiResearch extends GuiScreen {
 						2 * (y + height - 8), cost.getKey(), cost.getValue(),
 						ptdep);
 				components.add(cc);
-				costX += cc.getWidth() + 2;
+				costX += cc.getWidth() * 1.5;
 			}
 		}
 
