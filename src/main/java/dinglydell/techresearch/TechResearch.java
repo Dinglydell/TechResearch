@@ -14,7 +14,7 @@ import scala.actors.threadpool.Arrays;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
@@ -215,7 +215,7 @@ public class TechResearch {
 	}
 
 	@EventHandler
-	public void postInit(FMLPostInitializationEvent event) {
+	public void loadComplete(FMLLoadCompleteEvent event) {
 		TechTree.replace();
 	}
 
