@@ -15,8 +15,9 @@ public class TechTree {
 	/**
 	 * Register a node with the tree.
 	 * */
-	public static void addTechNode(TechNode node) {
+	public static TechNode addTechNode(TechNode node) {
 		nodes.put(node.id, node);
+		return node;
 	}
 
 	/**
