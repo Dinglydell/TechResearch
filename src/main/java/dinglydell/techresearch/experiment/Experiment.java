@@ -108,7 +108,7 @@ public class Experiment {
 	}
 
 	/** Gets the number of times this experiment has been performed */
-	private int getUses(PlayerTechDataExtendedProps ptdep) {
+	protected int getUses(PlayerTechDataExtendedProps ptdep) {
 		int q;
 		if (ptdep.getExperiments().containsKey(this)) {
 			q = ptdep.getExperiments().get(this);
