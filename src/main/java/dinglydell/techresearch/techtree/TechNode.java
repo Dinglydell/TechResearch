@@ -88,7 +88,7 @@ public class TechNode {
 	 * The node requires every requirementAll to be valid.
 	 * */
 	public TechNode addRequirementAll(String nodeID) {
-		return addRequirementAll(nodeID);
+		return addRequirementAll(TechTree.nodes.get(nodeID));
 
 	}
 
