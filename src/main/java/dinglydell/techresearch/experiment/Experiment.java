@@ -111,7 +111,7 @@ public class Experiment {
 	protected int getUses(PlayerTechDataExtendedProps ptdep) {
 		int q;
 		if (ptdep.getExperiments().containsKey(this)) {
-			q = ptdep.getExperiments().get(this);
+			q = ptdep.getExperiments().get(this).uses;
 		} else {
 			q = 1;
 		}

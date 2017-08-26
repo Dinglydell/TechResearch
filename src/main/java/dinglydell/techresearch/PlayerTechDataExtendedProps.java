@@ -18,6 +18,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
 import dinglydell.techresearch.experiment.Experiment;
 import dinglydell.techresearch.experiment.ExperimentContext;
+import dinglydell.techresearch.experiment.PlayerExperimentData;
 import dinglydell.techresearch.network.PacketTechResearch;
 import dinglydell.techresearch.researchtype.ResearchType;
 import dinglydell.techresearch.techtree.NodeProgress;
@@ -49,7 +50,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 	// protected double physics = 0;
 	private Map<TechNode, NodeProgress> nodes = new HashMap<TechNode, NodeProgress>();
 	private Map<String, TechNode> availableNodes = new HashMap<String, TechNode>();
-	private Map<Experiment, Integer> experiments = new HashMap<Experiment, Integer>();
+	private Map<Experiment, PlayerExperimentData> experiments = new HashMap<Experiment, PlayerExperimentData>();
 
 	public PlayerTechDataExtendedProps(EntityPlayer player) {
 		this.player = player;
@@ -78,10 +79,11 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 		}
 		NBTTagList exps = new NBTTagList();
 		techData.setTag(EXPERIMENTS, exps);
-		for (Entry<Experiment, Integer> exp : experiments.entrySet()) {
-			NBTTagCompound expTag = new NBTTagCompound();
+		for (Entry<Experiment, PlayerExperimentData> exp : experiments
+				.entrySet()) {
+			NBTTagCompound expTag = exp.getValue().getNBTData();
 			expTag.setString(EXPERIMENT, exp.getKey().name);
-			expTag.setInteger(QUANTITY, exp.getValue());
+			// expTag.setInteger(QUANTITY, exp.getValue());
 			exps.appendTag(expTag);
 		}
 
@@ -124,7 +126,9 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 		for (int i = 0; i < exps.tagCount(); i++) {
 			NBTTagCompound expTag = exps.getCompoundTagAt(i);
 			experiments.put(Experiment.experiments.get(expTag
-					.getString(EXPERIMENT)), expTag.getInteger(QUANTITY));
+					.getString(EXPERIMENT)), new PlayerExperimentData(expTag));
+			// experiments.put(Experiment.experiments.get(expTag
+			// .getString(EXPERIMENT)), expTag.getInteger(QUANTITY));
 		}
 
 		// available nodes
@@ -343,17 +347,17 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 	//
 	// }
 
-	public Map<Experiment, Integer> getExperiments() {
+	public Map<Experiment, PlayerExperimentData> getExperiments() {
 		return experiments;
 	}
 
-	public void setExperiments(Map<Experiment, Integer> experiments) {
+	public void setExperiments(Map<Experiment, PlayerExperimentData> experiments) {
 		this.experiments = experiments;
 
 	}
 
 	/**
-	 * Add resarch points with a context
+	 * Add research points with a context
 	 * */
 	public <T> void addResearchPoints(ExperimentContext<T> exp,
 			double multiplier,
@@ -398,9 +402,9 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 
 	private void incrementExperiment(Experiment exp) {
 		if (!experiments.containsKey(exp)) {
-			experiments.put(exp, 0);
+			experiments.put(exp, new PlayerExperimentData());
 		}
-		experiments.put(exp, experiments.get(exp) + 1);
+		experiments.get(exp).useExperiment();
 
 	}
 
