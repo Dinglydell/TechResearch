@@ -28,6 +28,8 @@ gui.techresearch.techtype.theory=Theory
 gui.techresearch.techtype.theory.desc=May lead to more breakthroughs in this field.
 gui.techresearch.techtype.application=Application
 
+item.notebook.name=Researcher's Notebook
+
 tech.techresearch.stonetools=Stone Tools
 tech.techresearch.stonetools.desc=Wood is great and all but the tools it makes seem to break very easily. Perhaps tools can be made from a better material like... stone? It seems pretty solid.
 tech.techresearch.furnace=Stone Furnace

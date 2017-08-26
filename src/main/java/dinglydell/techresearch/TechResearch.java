@@ -26,6 +26,8 @@ import dinglydell.techresearch.block.TRBlocks;
 import dinglydell.techresearch.event.ExperimentEventHandler;
 import dinglydell.techresearch.event.PlayerEventHandler;
 import dinglydell.techresearch.event.TechKeyBindings;
+import dinglydell.techresearch.item.ItemNotebook;
+import dinglydell.techresearch.item.TRItems;
 import dinglydell.techresearch.network.PacketBuyTech;
 import dinglydell.techresearch.network.PacketBuyTechHandler;
 import dinglydell.techresearch.network.PacketTechHandler;
@@ -54,8 +56,17 @@ public class TechResearch {
 		setConfigObj(event);
 
 		registerBlocks();
-		TechResearchSettings.disableDefaultExperiments();
-		TechResearchSettings.disableDefaultTree();
+		registerItems();
+		// TechResearchSettings.disableDefaultExperiments();
+		// TechResearchSettings.disableDefaultTree();
+	}
+
+	private void registerItems() {
+		TRItems.notebook = (ItemNotebook) new ItemNotebook()
+				.setUnlocalizedName("notebook").setTextureName(MODID
+						+ ":notebook");
+		GameRegistry.registerItem(TRItems.notebook, "notebook");
+
 	}
 
 	private void registerBlocks() {
