@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.minecraft.util.StatCollector;
 import dinglydell.techresearch.PlayerTechDataExtendedProps;
+import dinglydell.techresearch.TechResearch;
 import dinglydell.techresearch.TechResearchSettings;
 import dinglydell.techresearch.researchtype.ResearchType;
 
@@ -133,6 +135,12 @@ public class Experiment {
 			values.put(val.getKey(), getValue(val.getKey(), ptdep, multiplier));
 		}
 		return values;
+	}
+
+	public String getDisplayName() {
+
+		return StatCollector.translateToLocal("experiment."
+				+ TechResearch.MODID + "." + name);
 	}
 
 }

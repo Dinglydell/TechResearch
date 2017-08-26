@@ -395,7 +395,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 			return;
 		}
 		player.addChatMessage(new ChatComponentText("Your observations of "
-				+ exp.name + " have earned you " + gain + " "
+				+ exp.getDisplayName() + " have earned you " + gain + " "
 				+ discoveredType.getDisplayName()
 				+ (discoveredType.name.equals("research") ? "" : " research.")));
 	}
