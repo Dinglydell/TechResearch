@@ -26,6 +26,9 @@ public class ItemNotebook extends Item {
 			float hitX,
 			float hitY,
 			float hitZ) {
+		if (world.isRemote) {
+			return false;
+		}
 		Block block = world.getBlock(x, y, z);
 		if (!ExperimentNotebook.notebookExperiments.containsKey(block)) {
 			player.addChatMessage(new ChatComponentText(

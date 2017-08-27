@@ -6,7 +6,7 @@ import java.util.Map;
 import net.minecraft.block.Block;
 import dinglydell.techresearch.researchtype.ResearchType;
 
-public abstract class ExperimentNotebook extends ExperimentContext<Block> {
+public class ExperimentNotebook extends ExperimentContext<Block> {
 
 	public static Map<Block, ExperimentNotebook> notebookExperiments = new HashMap<Block, ExperimentNotebook>();
 
