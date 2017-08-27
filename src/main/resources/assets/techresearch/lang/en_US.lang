@@ -1,5 +1,10 @@
 tile.pendulum.name=Wooden Pendulum
 
+experiment.techresearch.falling=Falling
+experiment.techresearch.pendulums=Pendulums
+experiment.techresearch.anvils=Anvils
+experiment.techresearch.crafting=Crafting
+experiment.techresearch.farming=Farming
 
 gui.techresearch.other=Other
 gui.techresearch.tooltip.unlocks=Unlocks:

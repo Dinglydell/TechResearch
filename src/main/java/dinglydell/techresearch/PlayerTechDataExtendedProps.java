@@ -391,7 +391,8 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 		if (gain == -1) {
 			player.addChatMessage(new ChatComponentText(
 					"You can no longer gain " + discoveredType.getDisplayName()
-							+ " knowledge by observing " + exp.name + " here."));
+							+ " knowledge by observing " + exp.getDisplayName()
+							+ " here."));
 			return;
 		}
 		player.addChatMessage(new ChatComponentText("Your observations of "
