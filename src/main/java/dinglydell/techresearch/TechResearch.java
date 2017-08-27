@@ -7,6 +7,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.oredict.ShapedOreRecipe;
@@ -62,10 +64,10 @@ public class TechResearch {
 	}
 
 	private void registerItems() {
-		TRItems.notebook = (ItemNotebook) new ItemNotebook()
+		TRItems.notebook = new ItemStack(new ItemNotebook()
 				.setUnlocalizedName("notebook").setTextureName(MODID
-						+ ":notebook");
-		GameRegistry.registerItem(TRItems.notebook, "notebook");
+						+ ":notebook"));
+		GameRegistry.registerItem(TRItems.notebook.getItem(), "notebook");
 
 	}
 
@@ -222,6 +224,11 @@ public class TechResearch {
 						"stickWood",
 						Character.valueOf('b'),
 						Blocks.wooden_button }));
+
+		if (TechResearchSettings.defaultNotebookRecipe) {
+			GameRegistry.addShapelessRecipe(TRItems.notebook,
+					new Object[] { Items.book, "dustRedstone" });
+		}
 
 	}
 

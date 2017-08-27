@@ -1,8 +1,9 @@
 package dinglydell.techresearch.item;
 
+import net.minecraft.item.ItemStack;
 
 public class TRItems {
 
-	public static ItemNotebook notebook;
+	public static ItemStack notebook;
 
 }
