@@ -55,6 +55,7 @@ public class Experiment {
 	public String name;
 
 	protected Map<ResearchType, Double> initialValues;
+	protected int cooldown;
 
 	public Experiment(String name) {
 		this.name = name;
@@ -65,7 +66,13 @@ public class Experiment {
 	}
 
 	public Experiment(String name, Map<ResearchType, Double> initialValues) {
+		this(name, initialValues, 0);
+	}
+
+	public Experiment(String name, Map<ResearchType, Double> initialValues,
+			int cooldown) {
 		this(name);
+		this.cooldown = cooldown;
 		this.initialValues = initialValues;
 		for (Entry<ResearchType, Double> value : initialValues.entrySet()) {
 			if (!value.getKey().isBaseType()) {
@@ -131,8 +138,13 @@ public class Experiment {
 	public Map<ResearchType, Double> getValues(PlayerTechDataExtendedProps ptdep,
 			double multiplier) {
 		Map<ResearchType, Double> values = new HashMap<ResearchType, Double>();
-		for (Entry<ResearchType, Double> val : initialValues.entrySet()) {
-			values.put(val.getKey(), getValue(val.getKey(), ptdep, multiplier));
+		if (!ptdep.getExperiments().containsKey(this)
+				|| ptdep.player.worldObj.getTotalWorldTime()
+						- ptdep.getExperiments().get(this).lastUsed >= cooldown) {
+			for (Entry<ResearchType, Double> val : initialValues.entrySet()) {
+				values.put(val.getKey(),
+						getValue(val.getKey(), ptdep, multiplier));
+			}
 		}
 		return values;
 	}

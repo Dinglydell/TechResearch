@@ -42,7 +42,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 	public static final String AVAILABLE_NODES = "available";
 	public static final String AVAILABLE_NODE = "node";
 
-	protected final EntityPlayer player;
+	public final EntityPlayer player;
 
 	public Map<ResearchType, Double> researchPoints = new HashMap<ResearchType, Double>();
 	// protected double biology = 0;
@@ -54,6 +54,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 
 	public PlayerTechDataExtendedProps(EntityPlayer player) {
 		this.player = player;
+
 	}
 
 	@Override
