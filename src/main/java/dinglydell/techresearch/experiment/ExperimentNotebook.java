@@ -11,10 +11,10 @@ import dinglydell.techresearch.researchtype.ResearchType;
 public class ExperimentNotebook extends Experiment<BlockState> {
 
 	public static class BlockState {
-		World world;
-		int x;
-		int y;
-		int z;
+		public final World world;
+		public final int x;
+		public final int y;
+		public final int z;
 
 		public BlockState(World world, int x, int y, int z) {
 			this.world = world;
