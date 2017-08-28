@@ -143,7 +143,13 @@ public class Experiment<TContext> {
 
 	/** Gets the number of times this experiment has been performed */
 	protected int getUses(PlayerTechDataExtendedProps ptdep) {
-		return getUses(ptdep, null);
+		int q;
+		if (ptdep.getExperiments().containsKey(this)) {
+			q = ptdep.getExperiments().get(this).uses;
+		} else {
+			q = 1;
+		}
+		return q;
 	}
 
 	/**
