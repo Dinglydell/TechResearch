@@ -140,7 +140,7 @@ public class Experiment {
 		Map<ResearchType, Double> values = new HashMap<ResearchType, Double>();
 		if (!ptdep.getExperiments().containsKey(this)
 				|| ptdep.player.worldObj.getTotalWorldTime()
-						- ptdep.getExperiments().get(this).lastUsed >= cooldown) {
+						- ptdep.getExperiments().get(this).lastUsed >= getCooldown()) {
 			for (Entry<ResearchType, Double> val : initialValues.entrySet()) {
 				values.put(val.getKey(),
 						getValue(val.getKey(), ptdep, multiplier));
@@ -153,6 +153,10 @@ public class Experiment {
 
 		return StatCollector.translateToLocal("experiment."
 				+ TechResearch.MODID + "." + name);
+	}
+
+	protected int getCooldown() {
+		return cooldown;
 	}
 
 }
