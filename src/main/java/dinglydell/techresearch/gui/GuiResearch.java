@@ -30,16 +30,21 @@ import dinglydell.techresearch.techtree.TechNode;
 
 //TODO: container for GuiResearch
 public class GuiResearch extends GuiScreen {
-	public static enum ResearchLevel {
-		basic("gui.techresearch.basic", 2, new ResourceLocation(
-				TechResearch.MODID + ":textures/gui/research_basic.png"), 80,
-				45, 2, 160, 0xFFFFFF, 0xFFFFFF),
-		notebook("gui.techresearch.notebook", 3, new ResourceLocation(
-				TechResearch.MODID + ":textures/gui/research_notebook.png"),
-				121, 27, 2, 121, 0x000000, 0xFFFFFF),
-		table("gui.techresearch.table", 4, new ResourceLocation(
-				TechResearch.MODID + ":textures/gui/research.png"), 80, 8, 0,
-				160, 0xFFFFFF, 0xFFFFFF);
+	public static class ResearchLevel {
+		public static ResearchLevel basic = new ResearchLevel(
+				"gui.techresearch.basic", 2,
+				new ResourceLocation(TechResearch.MODID
+						+ ":textures/gui/research_basic.png"), 80, 45, 2, 160,
+				0xFFFFFF, 0xFFFFFF);
+		public static ResearchLevel notebook = new ResearchLevel(
+				"gui.techresearch.notebook", 3, new ResourceLocation(
+						TechResearch.MODID
+								+ ":textures/gui/research_notebook.png"), 121,
+				27, 2, 121, 0x000000, 0xFFFFFF);
+		public static ResearchLevel table = new ResearchLevel(
+				"gui.techresearch.table", 4, new ResourceLocation(
+						TechResearch.MODID + ":textures/gui/research.png"), 80,
+				8, 0, 160, 0xFFFFFF, 0xFFFFFF);
 
 		public final ResourceLocation texture;
 		private int numOptions;
