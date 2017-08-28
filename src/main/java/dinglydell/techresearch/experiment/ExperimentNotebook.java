@@ -4,9 +4,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.minecraft.block.Block;
+import net.minecraft.world.World;
+import dinglydell.techresearch.experiment.ExperimentNotebook.BlockState;
 import dinglydell.techresearch.researchtype.ResearchType;
 
-public class ExperimentNotebook extends ExperimentContext<Block> {
+public class ExperimentNotebook extends ExperimentContext<BlockState> {
+
+	public static class BlockState {
+		World world;
+		int x;
+		int y;
+		int z;
+
+		public BlockState(World world, int x, int y, int z) {
+			this.world = world;
+			this.x = x;
+			this.y = y;
+			this.z = z;
+		}
+	}
 
 	public static Map<Block, ExperimentNotebook> notebookExperiments = new HashMap<Block, ExperimentNotebook>();
 

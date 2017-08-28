@@ -8,6 +8,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import dinglydell.techresearch.PlayerTechDataExtendedProps;
 import dinglydell.techresearch.experiment.ExperimentNotebook;
+import dinglydell.techresearch.experiment.ExperimentNotebook.BlockState;
 
 public class ItemNotebook extends Item {
 
@@ -37,8 +38,9 @@ public class ItemNotebook extends Item {
 		}
 		ExperimentNotebook exp = ExperimentNotebook.notebookExperiments
 				.get(block);
-		PlayerTechDataExtendedProps.get(player)
-				.addResearchPoints(exp, 1, block);
+		PlayerTechDataExtendedProps.get(player).addResearchPoints(exp,
+				1,
+				new BlockState(world, x, y, z));
 		return true;
 	}
 }
