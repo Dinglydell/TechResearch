@@ -126,8 +126,9 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 		NBTTagList exps = techData.getTagList(EXPERIMENTS, 10);
 		for (int i = 0; i < exps.tagCount(); i++) {
 			NBTTagCompound expTag = exps.getCompoundTagAt(i);
-			experiments.put(Experiment.experiments.get(expTag
-					.getString(EXPERIMENT)), new PlayerExperimentData(expTag));
+			Experiment exp = Experiment.experiments.get(expTag
+					.getString(EXPERIMENT));
+			experiments.put(exp, exp.getData(expTag));
 			// experiments.put(Experiment.experiments.get(expTag
 			// .getString(EXPERIMENT)), expTag.getInteger(QUANTITY));
 		}

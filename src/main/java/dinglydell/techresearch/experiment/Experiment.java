@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.StatCollector;
 import dinglydell.techresearch.PlayerTechDataExtendedProps;
 import dinglydell.techresearch.TechResearch;
@@ -157,6 +158,20 @@ public class Experiment {
 
 	protected int getCooldown() {
 		return cooldown;
+	}
+
+	/** Creates a data object from an NBT tag */
+	public PlayerExperimentData getData(NBTTagCompound expTag) {
+
+		return new PlayerExperimentData(expTag);
+	}
+
+	/**
+	 * Creates a data object for an experiment being used for the first time by
+	 * a player
+	 */
+	public PlayerExperimentData getBlankData() {
+		return new PlayerExperimentData();
 	}
 
 }
