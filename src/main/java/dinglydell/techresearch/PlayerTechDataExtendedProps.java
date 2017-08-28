@@ -393,14 +393,17 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 								+ exp.getDisplayName() + " here."));
 				continue;
 			}
-			player.addChatMessage(new ChatComponentText("Your observations of "
-					+ exp.getDisplayName()
-					+ " have earned you "
-					+ entry.getValue()
-					+ " "
-					+ entry.getKey().getDisplayName()
-					+ (entry.getKey().name.equals("research") ? ""
-							: " research.")));
+			if (entry.getValue() != 0) {
+				player.addChatMessage(new ChatComponentText(
+						"Your observations of "
+								+ exp.getDisplayName()
+								+ " have earned you "
+								+ entry.getValue()
+								+ " "
+								+ entry.getKey().getDisplayName()
+								+ (entry.getKey().name.equals("research") ? ""
+										: " research.")));
+			}
 		}
 
 		sendPacket();
