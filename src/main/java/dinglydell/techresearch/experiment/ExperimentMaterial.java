@@ -25,7 +25,9 @@ public class ExperimentMaterial extends Experiment<ItemStack> {
 	public Map<ResearchType, Double> getValues(PlayerTechDataExtendedProps ptdep,
 			double multiplier,
 			ItemStack item) {
-		Map<ResearchType, Double> values = getValues(ptdep, multiplier);
+		Map<ResearchType, Double> values = super.getValues(ptdep,
+				multiplier,
+				item);
 		if (ItemMaterial.hasEntry(item.getItem())) {
 			addValues(values,
 					type,

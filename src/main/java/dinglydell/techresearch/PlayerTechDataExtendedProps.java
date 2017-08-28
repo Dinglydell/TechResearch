@@ -365,41 +365,62 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 			T context) {
 
 		incrementExperiment(exp, context);
-		for (Entry<ResearchType, Double> value : exp.getValues(this,
+		Map<ResearchType, Double> discoveredPointsSet = new HashMap<ResearchType, Double>();
+		Map<ResearchType, Double> values = exp.getValues(this,
 				multiplier,
-				context).entrySet()) {
-			addPoints(exp, value);
+				context);
+		for (Entry<ResearchType, Double> value : values.entrySet()) {
+			ResearchType discovered = value.getKey().getDiscoveredType(this);
+			// if undiscovered, or -1, set to 0
+			if (!discoveredPointsSet.containsKey(discovered)
+					|| (discoveredPointsSet.get(discovered) == -1 && value
+							.getValue() > 0)) {
+				discoveredPointsSet.put(discovered, 0.0);
+			}
+
+			addPoints(exp, value.getKey(), value.getValue());
+
+			discoveredPointsSet.put(discovered,
+					discoveredPointsSet.get(discovered) + value.getValue());
+
+		}
+		for (Entry<ResearchType, Double> entry : discoveredPointsSet.entrySet()) {
+			if (entry.getValue() == -1) {
+				player.addChatMessage(new ChatComponentText(
+						"You can no longer gain "
+								+ entry.getKey().getDisplayName()
+								+ " knowledge by observing "
+								+ exp.getDisplayName() + " here."));
+				continue;
+			}
+			player.addChatMessage(new ChatComponentText("Your observations of "
+					+ exp.getDisplayName()
+					+ " have earned you "
+					+ entry.getValue()
+					+ " "
+					+ entry.getKey().getDisplayName()
+					+ (entry.getKey().name.equals("research") ? ""
+							: " research.")));
 		}
 
 		sendPacket();
 	}
 
-	private void addPoints(Experiment exp, Entry<ResearchType, Double> value) {
-		double gain = value.getValue();
+	private void addPoints(Experiment exp, ResearchType type, Double value) {
+		double gain = value;
 		if (gain > 0) {
-			researchPoints.put(value.getKey(),
-					getResearchPoints(value.getKey()) + gain);
+			researchPoints.put(type, getResearchPoints(type) + gain);
 		}
 
 		if (gain == 0) {
 			return;
 		}
 
-		ResearchType discoveredType = value.getKey().getDiscoveredType(this);
+		ResearchType discoveredType = type.getDiscoveredType(this);
 		while (!hasDiscovered(discoveredType)) {
 			discoveredType = discoveredType.getParentType();
 		}
-		if (gain == -1) {
-			player.addChatMessage(new ChatComponentText(
-					"You can no longer gain " + discoveredType.getDisplayName()
-							+ " knowledge by observing " + exp.getDisplayName()
-							+ " here."));
-			return;
-		}
-		player.addChatMessage(new ChatComponentText("Your observations of "
-				+ exp.getDisplayName() + " have earned you " + gain + " "
-				+ discoveredType.getDisplayName()
-				+ (discoveredType.name.equals("research") ? "" : " research.")));
+
 	}
 
 	private <TContext> void incrementExperiment(Experiment<TContext> exp,
@@ -417,14 +438,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 
 	/** Adds research points for this experiment with a multiplier */
 	public void addResearchPoints(Experiment exp, double multiplier) {
-		incrementExperiment(exp);
-
-		for (Entry<ResearchType, Double> value : ((Map<ResearchType, Double>) exp
-				.getValues(this, multiplier)).entrySet()) {
-			addPoints(exp, value);
-		}
-
-		sendPacket();
+		addResearchPoints(exp, multiplier, null);
 
 	}
 

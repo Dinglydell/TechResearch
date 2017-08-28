@@ -7,6 +7,7 @@ import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import dinglydell.techresearch.PlayerTechDataExtendedProps;
 import dinglydell.techresearch.gui.GuiResearch;
+import dinglydell.techresearch.gui.GuiResearch.ResearchLevel;
 
 public class PacketTechHandler implements
 		IMessageHandler<PacketTechResearch, IMessage> {
@@ -24,8 +25,9 @@ public class PacketTechHandler implements
 		ptdep.loadNBTData(message.data);
 		if (ctx.side.isClient()
 				&& Minecraft.getMinecraft().currentScreen instanceof GuiResearch) {
+			ResearchLevel level = ((GuiResearch) Minecraft.getMinecraft().currentScreen).level;
 			Minecraft.getMinecraft().thePlayer.closeScreen();
-			GuiResearch.openGui();
+			GuiResearch.openGui(level);
 		}
 		return null;
 	}

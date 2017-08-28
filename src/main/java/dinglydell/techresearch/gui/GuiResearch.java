@@ -28,21 +28,71 @@ import dinglydell.techresearch.researchtype.ResearchType;
 import dinglydell.techresearch.techtree.NodeProgress;
 import dinglydell.techresearch.techtree.TechNode;
 
+//TODO: container for GuiResearch
 public class GuiResearch extends GuiScreen {
-	private static final ResourceLocation TEXTURE = new ResourceLocation(
-			TechResearch.MODID + ":textures/gui/research.png");
+	public static enum ResearchLevel {
+		basic("gui.techresearch.basic", 2, new ResourceLocation(
+				TechResearch.MODID + ":textures/gui/research_basic.png"), 80,
+				45, 2, 160, 0xFFFFFF, 0xFFFFFF),
+		notebook("gui.techresearch.notebook", 3, new ResourceLocation(
+				TechResearch.MODID + ":textures/gui/research_notebook.png"),
+				121, 27, 2, 121, 0x000000, 0xFFFFFF),
+		table("gui.techresearch.table", 4, new ResourceLocation(
+				TechResearch.MODID + ":textures/gui/research.png"), 80, 8, 0,
+				160, 0xFFFFFF, 0xFFFFFF);
+
+		public final ResourceLocation texture;
+		private int numOptions;
+		public final int buttonStartX;
+		public final int buttonStartY;
+		public final int buttonMargin;
+		public final int buttonWidth;
+		public final int textColour;
+		public final int buttonTextColour;
+		private String unlocalisedName;
+
+		ResearchLevel(String unlocalisedName, int options,
+				ResourceLocation texture, int buttonStartX, int buttonStartY,
+				int buttonMargin, int buttonWidth, int textColour,
+				int buttonTextColour) {
+			this.unlocalisedName = unlocalisedName;
+			numOptions = options;
+			this.texture = texture;
+			this.buttonStartX = buttonStartX;
+			this.buttonStartY = buttonStartY;
+			this.buttonMargin = buttonMargin;
+			this.buttonWidth = buttonWidth;
+			this.textColour = textColour;
+			this.buttonTextColour = buttonTextColour;
+		}
+
+		public String getDisplayName() {
+			return StatCollector.translateToLocal(unlocalisedName);
+		}
+
+		public int getNumOptions() {
+			return numOptions;
+		}
+	}
+
+	// private static final ResourceLocation TEXTURE = new ResourceLocation(
+	// TechResearch.MODID + ":textures/gui/research.png");
 	private static final int GUI_WIDTH = 256;
-	private static final int GUI_HEIGHT = 164;
-	private static final int POINTS_WIDTH = 80;
+	private static final int GUI_HEIGHT = 166;
+	// private static final int POINTS_WIDTH = 80;
 	private PlayerTechDataExtendedProps ptdep;
 	private Collection<TechNode> options;
 
 	private List<CostComponent> components = new ArrayList<CostComponent>();
+	public ResearchLevel level;
 
-	public GuiResearch() {
+	public GuiResearch(ResearchLevel level) {
+		this.level = level;
 		ptdep = PlayerTechDataExtendedProps
 				.get(Minecraft.getMinecraft().thePlayer);
-		options = ptdep.getAvailableNodes();
+		Collection<TechNode> nodes = ptdep.getAvailableNodes();
+		options = new ArrayList<TechNode>(nodes).subList(0,
+				Math.min(nodes.size(), level.getNumOptions()));
 
 	}
 
@@ -53,14 +103,14 @@ public class GuiResearch extends GuiScreen {
 		buttonList.clear();
 		int offsetLeft = (width - GUI_WIDTH) / 2;
 		int offsetTop = (height - GUI_HEIGHT) / 2;
-		for (TechNode node : ptdep.getAvailableNodes()) {
-			buttonList
-					.add(new OptionButton(i++, offsetLeft + POINTS_WIDTH + 10,
-							offsetTop + 8 + (i - 1) * 39, 160, 30, node, ptdep
-									.getProgress(node), ptdep));
+		for (TechNode node : options) {
+			buttonList.add(new OptionButton(i++, offsetLeft
+					+ level.buttonStartX + 10, offsetTop + level.buttonStartY
+					+ (i - 1) * 39, level.buttonWidth, 30, node, ptdep
+					.getProgress(node), ptdep, level));
 		}
 		int textX = 8;
-		int textY = 8;
+		int textY = 14;
 		// i = 0;
 		components.clear();
 
@@ -126,7 +176,7 @@ public class GuiResearch extends GuiScreen {
 
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-		mc.getTextureManager().bindTexture(TEXTURE);
+		mc.getTextureManager().bindTexture(this.level.texture);
 		int offsetLeft = (width - GUI_WIDTH) / 2;
 		int offsetTop = (height - GUI_HEIGHT) / 2;
 		drawTexturedModalRect(offsetLeft,
@@ -135,9 +185,20 @@ public class GuiResearch extends GuiScreen {
 				0,
 				GUI_WIDTH,
 				GUI_HEIGHT);
+		fontRendererObj.drawString(level.getDisplayName(),
+				offsetLeft + 6,
+				offsetTop + 4,
+				level.textColour);
+		// drawString(this.fontRendererObj,
+		// "test",
+		// offsetLeft + 6,
+		// offsetTop + 4,
+		// level.textColour);
+		GL11.glColor4f(1, 1, 1, 1);
+
 		List<String> tooltip = new ArrayList<String>();
 		for (CostComponent cost : components) {
-			cost.drawCost();
+			cost.drawCost(level.textColour);
 			boolean isHovering = cost.isHovering(x, y);
 			if (isHovering) {
 				cost.addTooltip(tooltip, true);
@@ -234,8 +295,8 @@ public class GuiResearch extends GuiScreen {
 
 	}
 
-	public static void openGui() {
-		Minecraft.getMinecraft().displayGuiScreen(new GuiResearch());
+	public static void openGui(ResearchLevel level) {
+		Minecraft.getMinecraft().displayGuiScreen(new GuiResearch(level));
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -273,7 +334,7 @@ public class GuiResearch extends GuiScreen {
 
 		}
 
-		public void drawCost() {
+		public void drawCost(int colour) {
 			FontRenderer fontrenderer = mc.fontRenderer;
 			int height = 16;
 
@@ -294,9 +355,9 @@ public class GuiResearch extends GuiScreen {
 					posX + 16,
 					posY + (int) (256 * scale / 2) - fontrenderer.FONT_HEIGHT
 							/ 2,
-					0xFFFFFF,
+					colour,
 					false);
-
+			GL11.glColor4f(1, 1, 1, 1);
 		}
 
 		private String getCostString() {
@@ -339,22 +400,24 @@ public class GuiResearch extends GuiScreen {
 		public boolean hovering;
 		TechNode tech;
 		private NodeProgress progress;
+		private ResearchLevel level;
 		private List<CostComponent> components = new ArrayList<CostComponent>();
 
 		public OptionButton(int id, int x, int y, int width, int height,
 				TechNode tech, NodeProgress progress,
-				PlayerTechDataExtendedProps ptdep) {
+				PlayerTechDataExtendedProps ptdep, ResearchLevel level) {
 			super(id, x, y, width, height, tech.getDisplayName());
 			this.tech = tech;
 			this.progress = progress;
 			this.visible = true;
+			this.level = level;
 			Minecraft mc = Minecraft.getMinecraft();
 			FontRenderer fontrenderer = mc.fontRenderer;
-			int costX = 2 * (x + 1);
+			int costX = 2 * (x + 1) + (level.buttonMargin);
 			for (Entry<ResearchType, Double> cost : tech.costs.entrySet()) {
-				CostComponent cc = new CostComponent(mc, costX,
-						2 * (y + height - 8), cost.getKey(), cost.getValue(),
-						ptdep);
+				CostComponent cc = new CostComponent(mc, costX, 2
+						* (y + height - 8) - level.buttonMargin, cost.getKey(),
+						cost.getValue(), ptdep);
 				components.add(cc);
 				costX += cc.getWidth() * 1.5;
 			}
@@ -408,12 +471,12 @@ public class GuiResearch extends GuiScreen {
 						&& parX < xPosition + width && parY < yPosition
 						+ height);
 				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-				mc.getTextureManager().bindTexture(TEXTURE);
+				mc.getTextureManager().bindTexture(level.texture);
 				int textureX = 0;
-				int textureY = GUI_HEIGHT + 1;
+				int textureY = GUI_HEIGHT;
 
 				if (hovering) {
-					textureY += height + 1;
+					textureY += height;// + 1;
 				}
 
 				drawTexturedModalRect(xPosition,
@@ -424,20 +487,20 @@ public class GuiResearch extends GuiScreen {
 						height);
 
 				fontrenderer.drawString(tech.getDisplayName(),
-						xPosition + 2,
+						xPosition + 2 + level.buttonMargin,
 						yPosition + height / 3,
-						0xFFFFFF,
+						level.buttonTextColour,
 						false);
 				float scale = 0.5f;
 				GL11.glScalef(scale, scale, scale);
 				for (CostComponent cost : components) {
-					cost.drawCost();
+					cost.drawCost(level.buttonTextColour);
 				}
 				int newX = (int) (xPosition / scale);
 				int newY = (int) (yPosition / scale);
 				fontrenderer.drawString(tech.type.getDisplayName(),
-						newX + 2,
-						(int) (yPosition / scale + 2),
+						newX + 2 + (int) (level.buttonMargin / scale),
+						(int) (yPosition / scale + 2 + level.buttonMargin),
 						tech.type.getColour(),
 						false);
 

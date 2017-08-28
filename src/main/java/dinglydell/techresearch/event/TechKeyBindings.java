@@ -13,6 +13,7 @@ import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import dinglydell.techresearch.gui.GuiResearch;
+import dinglydell.techresearch.gui.GuiResearch.ResearchLevel;
 
 public class TechKeyBindings {
 	public static KeyBinding openTable;
@@ -44,7 +45,7 @@ public class TechKeyBindings {
 			if (Minecraft.getMinecraft().currentScreen instanceof GuiResearch) {
 				Minecraft.getMinecraft().thePlayer.closeScreen();
 			} else {
-				GuiResearch.openGui();
+				GuiResearch.openGui(ResearchLevel.basic);
 			}
 
 		}

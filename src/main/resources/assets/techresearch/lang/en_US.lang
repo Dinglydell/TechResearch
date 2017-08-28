@@ -29,6 +29,8 @@ research.techresearch.zoology=Zoology
 research.techresearch.metallurgy=Metallurgy
 research.techresearch.petrology=Petrology
 
+gui.techresearch.basic=Research Thoughts
+gui.techresearch.notebook=Researcher's Notebook
 gui.techresearch.techtype.theory=Theory
 gui.techresearch.techtype.theory.desc=May lead to more breakthroughs in this field.
 gui.techresearch.techtype.application=Application

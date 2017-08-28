@@ -1,0 +1,9 @@
+{
+	"item.notebook.open": {
+		"category": "neutral",
+        "sounds":
+        [
+            "item/notebookopen"
+        ]
+	}
+}
