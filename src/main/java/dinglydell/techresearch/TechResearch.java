@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
 import scala.actors.threadpool.Arrays;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -226,8 +227,8 @@ public class TechResearch {
 						Blocks.wooden_button }));
 
 		if (TechResearchSettings.defaultNotebookRecipe) {
-			GameRegistry.addShapelessRecipe(TRItems.notebook,
-					new Object[] { Items.book, "dustRedstone" });
+			GameRegistry.addRecipe(new ShapelessOreRecipe(TRItems.notebook,
+					new Object[] { Items.book, "dustRedstone" }));
 		}
 
 	}
