@@ -35,6 +35,11 @@ public class ExperimentNotebook extends Experiment<BlockState> {
 		super(name, initialValues);
 	}
 
+	public ExperimentNotebook(String name,
+			Map<ResearchType, Double> initialValues, int cooldown) {
+		super(name, initialValues, cooldown);
+	}
+
 	public static void registerNotebookExperiment(Block block,
 			ExperimentNotebook notebook) {
 		notebookExperiments.put(block, notebook);

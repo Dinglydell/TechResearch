@@ -364,7 +364,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 			double multiplier,
 			T context) {
 
-		incrementExperiment(exp);
+		incrementExperiment(exp, context);
 		for (Entry<ResearchType, Double> value : exp.getValues(this,
 				multiplier,
 				context).entrySet()) {
@@ -407,7 +407,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 		if (!experiments.containsKey(exp)) {
 			experiments.put(exp, exp.getBlankData());
 		}
-		experiments.get(exp).useExperiment();
+		experiments.get(exp).useExperiment(context);
 
 	}
 
