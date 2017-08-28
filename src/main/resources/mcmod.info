@@ -1,10 +1,10 @@
 [
 {
-  "modid": "TechResearch",
+  "modid": "techresearch",
   "name": "Tech Research",
   "description": "Researchabubble tech",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
+  "version": "0.1",
+  "mcversion": "1.7.10",
   "url": "",
   "updateUrl": "",
   "authorList": ["Dinglydell"],
