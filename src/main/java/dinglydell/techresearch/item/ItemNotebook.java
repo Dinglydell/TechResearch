@@ -20,25 +20,18 @@ public class ItemNotebook extends Item {
 	}
 
 	@Override
-	public boolean onItemUse(ItemStack stack,
-			EntityPlayer player,
+	public ItemStack onItemRightClick(ItemStack stack,
 			World world,
-			int x,
-			int y,
-			int z,
-			int p_77648_7_,
-			float p_77648_8_,
-			float p_77648_9_,
-			float p_77648_10_) {
+			EntityPlayer player) {
 		if (player.isSneaking()) {
-			return false;
+			return stack;
 		}
 		world.playSoundAtEntity(player, TechResearch.MODID
 				+ ":item.notebook.open", 1f, 1f);
 		if (world.isRemote) {
 			GuiResearch.openGui(ResearchLevel.notebook);
 		}
-		return true;
+		return stack;
 	}
 
 	@Override
