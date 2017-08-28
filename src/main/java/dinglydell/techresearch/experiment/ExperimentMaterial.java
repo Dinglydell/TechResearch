@@ -8,7 +8,7 @@ import dinglydell.techresearch.researchtype.ItemMaterial;
 import dinglydell.techresearch.researchtype.ResearchType;
 import dinglydell.techresearch.researchtype.ResearchTypeMaterial;
 
-public class ExperimentMaterial extends ExperimentContext<ItemStack> {
+public class ExperimentMaterial extends Experiment<ItemStack> {
 
 	private double value;
 

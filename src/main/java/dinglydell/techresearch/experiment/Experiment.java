@@ -11,7 +11,7 @@ import dinglydell.techresearch.TechResearch;
 import dinglydell.techresearch.TechResearchSettings;
 import dinglydell.techresearch.researchtype.ResearchType;
 
-public class Experiment {
+public class Experiment<TContext> {
 	public static Experiment fall;
 	public static Experiment mobFall;
 	public static Experiment pendulum;
@@ -83,15 +83,16 @@ public class Experiment {
 		}
 	}
 
-	/** Returns how much of this type the player should gain */
+	// TODO: something better than this
 	protected double getValue(ResearchType researchType,
 			PlayerTechDataExtendedProps ptdep,
-			double multiplier) {
+			double multiplier,
+			TContext context) {
 		double amount = initialValues.get(researchType) * multiplier;
 		double amt = amount;
 
 		double threshhold = 1.0;
-		int q = getUses(ptdep);
+		int q = getUses(ptdep, context);
 
 		amt /= q;
 		amt = Math.round(amt * 10) / 10.0;
@@ -117,15 +118,32 @@ public class Experiment {
 
 	}
 
+	protected int getUses(PlayerTechDataExtendedProps ptdep, TContext context) {
+		return getUses(ptdep);
+	}
+
+	public Map<ResearchType, Double> getValues(PlayerTechDataExtendedProps ptdep,
+			double multiplier,
+			TContext context) {
+		Map<ResearchType, Double> values = new HashMap<ResearchType, Double>();
+		for (Entry<ResearchType, Double> val : initialValues.entrySet()) {
+			values.put(val.getKey(),
+					getValue(val.getKey(), ptdep, multiplier, context));
+		}
+		return values;
+	}
+
+	/** Returns how much of this type the player should gain */
+	protected double getValue(ResearchType researchType,
+			PlayerTechDataExtendedProps ptdep,
+			double multiplier) {
+		return getValue(researchType, ptdep, multiplier, null);
+
+	}
+
 	/** Gets the number of times this experiment has been performed */
 	protected int getUses(PlayerTechDataExtendedProps ptdep) {
-		int q;
-		if (ptdep.getExperiments().containsKey(this)) {
-			q = ptdep.getExperiments().get(this).uses;
-		} else {
-			q = 1;
-		}
-		return q;
+		return getUses(ptdep, null);
 	}
 
 	/**
@@ -138,16 +156,8 @@ public class Experiment {
 	 * */
 	public Map<ResearchType, Double> getValues(PlayerTechDataExtendedProps ptdep,
 			double multiplier) {
-		Map<ResearchType, Double> values = new HashMap<ResearchType, Double>();
-		if (!ptdep.getExperiments().containsKey(this)
-				|| ptdep.player.worldObj.getTotalWorldTime()
-						- ptdep.getExperiments().get(this).lastUsed >= getCooldown()) {
-			for (Entry<ResearchType, Double> val : initialValues.entrySet()) {
-				values.put(val.getKey(),
-						getValue(val.getKey(), ptdep, multiplier));
-			}
-		}
-		return values;
+
+		return getValues(ptdep, multiplier, null);
 	}
 
 	public String getDisplayName() {

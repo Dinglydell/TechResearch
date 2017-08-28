@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 
 /** Data about experiments specific to a player */
-public class PlayerExperimentData {
+public class PlayerExperimentData<TContext> {
 	/** Number of times the experiment has been carried out */
 	public int uses;
 	/** time the experiment was last carried out in minecraft time */
@@ -30,6 +30,10 @@ public class PlayerExperimentData {
 	}
 
 	public PlayerExperimentData useExperiment() {
+		return useExperiment(null);
+	}
+
+	public PlayerExperimentData useExperiment(TContext context) {
 		uses++;
 
 		lastUsed = Minecraft.getMinecraft().theWorld.getWorldTime();

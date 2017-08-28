@@ -8,7 +8,7 @@ import net.minecraft.world.World;
 import dinglydell.techresearch.experiment.ExperimentNotebook.BlockState;
 import dinglydell.techresearch.researchtype.ResearchType;
 
-public class ExperimentNotebook extends ExperimentContext<BlockState> {
+public class ExperimentNotebook extends Experiment<BlockState> {
 
 	public static class BlockState {
 		World world;

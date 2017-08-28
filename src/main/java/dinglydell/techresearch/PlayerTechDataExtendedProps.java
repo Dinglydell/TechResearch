@@ -17,7 +17,6 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
 import dinglydell.techresearch.experiment.Experiment;
-import dinglydell.techresearch.experiment.ExperimentContext;
 import dinglydell.techresearch.experiment.PlayerExperimentData;
 import dinglydell.techresearch.network.PacketTechResearch;
 import dinglydell.techresearch.researchtype.ResearchType;
@@ -361,7 +360,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 	/**
 	 * Add research points with a context
 	 * */
-	public <T> void addResearchPoints(ExperimentContext<T> exp,
+	public <T> void addResearchPoints(Experiment<T> exp,
 			double multiplier,
 			T context) {
 
@@ -403,19 +402,25 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 				+ (discoveredType.name.equals("research") ? "" : " research.")));
 	}
 
-	private void incrementExperiment(Experiment exp) {
+	private <TContext> void incrementExperiment(Experiment<TContext> exp,
+			TContext context) {
 		if (!experiments.containsKey(exp)) {
-			experiments.put(exp, new PlayerExperimentData());
+			experiments.put(exp, exp.getBlankData());
 		}
 		experiments.get(exp).useExperiment();
 
 	}
 
+	private void incrementExperiment(Experiment exp) {
+		incrementExperiment(exp, null);
+	}
+
 	/** Adds research points for this experiment with a multiplier */
 	public void addResearchPoints(Experiment exp, double multiplier) {
 		incrementExperiment(exp);
-		for (Entry<ResearchType, Double> value : exp
-				.getValues(this, multiplier).entrySet()) {
+
+		for (Entry<ResearchType, Double> value : ((Map<ResearchType, Double>) exp
+				.getValues(this, multiplier)).entrySet()) {
 			addPoints(exp, value);
 		}
 
