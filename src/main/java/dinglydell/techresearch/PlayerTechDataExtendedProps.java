@@ -364,7 +364,6 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 			double multiplier,
 			T context) {
 
-		incrementExperiment(exp, context);
 		Map<ResearchType, Double> discoveredPointsSet = new HashMap<ResearchType, Double>();
 		Map<ResearchType, Double> values = exp.getValues(this,
 				multiplier,
@@ -384,6 +383,7 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 					discoveredPointsSet.get(discovered) + value.getValue());
 
 		}
+		incrementExperiment(exp, context);
 		for (Entry<ResearchType, Double> entry : discoveredPointsSet.entrySet()) {
 			if (entry.getValue() == -1) {
 				player.addChatMessage(new ChatComponentText(
