@@ -36,7 +36,7 @@ public class PlayerExperimentData<TContext> {
 	public PlayerExperimentData useExperiment(TContext context) {
 		uses++;
 
-		lastUsed = Minecraft.getMinecraft().theWorld.getWorldTime();
+		lastUsed = Minecraft.getMinecraft().theWorld.getTotalWorldTime();
 		return this;
 	}
 }

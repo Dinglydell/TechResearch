@@ -36,6 +36,8 @@ public class TechNode {
 
 	public TechNodeType type;
 
+	protected int requirementQuantity = 0;
+
 	public TechNode(String id, TechNodeType type,
 			Map<ResearchType, Double> costs) {
 		// , String[] unlocks,
@@ -79,6 +81,16 @@ public class TechNode {
 	 * */
 	public TechNode setDecsription(String desc) {
 		this.description = desc;
+		return this;
+	}
+
+	/**
+	 * Adds a tech requirement for this tech node.
+	 * 
+	 * The node will require at least quantity techs to have been unlocked
+	 * */
+	public TechNode addRequirementQuantity(int quantity) {
+		this.requirementQuantity = quantity;
 		return this;
 	}
 
@@ -309,6 +321,10 @@ public class TechNode {
 	 * */
 	public boolean isValid(PlayerTechDataExtendedProps ptdep) {
 		if (ptdep.hasCompleted(this)) {
+			return false;
+		}
+		if (this.requirementQuantity > 0
+				&& ptdep.getCompletedNodes().size() < this.requirementQuantity) {
 			return false;
 		}
 		for (ResearchType rt : this.costs.keySet()) {

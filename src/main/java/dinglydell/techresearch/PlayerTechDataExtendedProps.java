@@ -559,4 +559,15 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 		return nodes.get(node);
 	}
 
+	public List<TechNode> getCompletedNodes() {
+		Map<TechNode, NodeProgress> nodes = getNodes();
+		List<TechNode> completed = new ArrayList<TechNode>();
+		for (Entry<TechNode, NodeProgress> node : nodes.entrySet()) {
+			if (node.getValue().isComplete()) {
+				completed.add(node.getKey());
+			}
+		}
+		return completed;
+	}
+
 }
