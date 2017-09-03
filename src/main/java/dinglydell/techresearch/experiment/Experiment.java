@@ -126,11 +126,20 @@ public class Experiment<TContext> {
 			double multiplier,
 			TContext context) {
 		Map<ResearchType, Double> values = new HashMap<ResearchType, Double>();
-		for (Entry<ResearchType, Double> val : initialValues.entrySet()) {
-			values.put(val.getKey(),
-					getValue(val.getKey(), ptdep, multiplier, context));
+		if (cooldownValid(ptdep, context)) {
+			for (Entry<ResearchType, Double> val : initialValues.entrySet()) {
+				values.put(val.getKey(),
+						getValue(val.getKey(), ptdep, multiplier, context));
+			}
 		}
 		return values;
+	}
+
+	protected boolean cooldownValid(PlayerTechDataExtendedProps ptdep,
+			TContext context) {
+		return !ptdep.getExperiments().containsKey(this)
+				|| ptdep.player.worldObj.getTotalWorldTime()
+						- ptdep.getExperiments().get(this).lastUsed > getCooldown();
 	}
 
 	/** Returns how much of this type the player should gain */
