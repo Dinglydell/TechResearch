@@ -22,6 +22,7 @@ import dinglydell.techresearch.network.PacketTechResearch;
 import dinglydell.techresearch.researchtype.ResearchType;
 import dinglydell.techresearch.techtree.NodeProgress;
 import dinglydell.techresearch.techtree.TechNode;
+import dinglydell.techresearch.techtree.TechNode.TechNodeTier;
 import dinglydell.techresearch.techtree.TechTree;
 import dinglydell.techresearch.util.MapUtils;
 
@@ -569,6 +570,18 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 		List<TechNode> completed = new ArrayList<TechNode>();
 		for (Entry<TechNode, NodeProgress> node : nodes.entrySet()) {
 			if (node.getValue().isComplete()) {
+				completed.add(node.getKey());
+			}
+		}
+		return completed;
+	}
+
+	/** Returns a list of completed nodes of a certain tier */
+	public List<TechNode> getTieredNodes(TechNodeTier tier) {
+		Map<TechNode, NodeProgress> nodes = getNodes();
+		List<TechNode> completed = new ArrayList<TechNode>();
+		for (Entry<TechNode, NodeProgress> node : nodes.entrySet()) {
+			if (node.getValue().isComplete() && tier == node.getKey().tier) {
 				completed.add(node.getKey());
 			}
 		}

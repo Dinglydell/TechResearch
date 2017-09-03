@@ -15,6 +15,29 @@ import dinglydell.techresearch.researchtype.ResearchType;
 
 public class TechNode {
 
+	public static class TechNodeTier {
+		public static List<TechNodeTier> tiers = new ArrayList<TechNodeTier>();
+
+		public static TechNodeTier createNextTier(int quantity) {
+			TechNodeTier tier = new TechNodeTier(tiers.size(), quantity);
+			tiers.add(tier);
+			return tier;
+		}
+
+		public static TechNodeTier getTier(int tierNum) {
+			return tiers.get(tierNum);
+		}
+
+		public final int tierNum;
+		/** How much of this tier needed to allow next tier */
+		public final int quantity;
+
+		private TechNodeTier(int num, int quantity) {
+			this.tierNum = num;
+			this.quantity = quantity;
+		}
+	}
+
 	public final String id;
 
 	private final List<ItemStack> unlocks;
@@ -37,6 +60,8 @@ public class TechNode {
 	public TechNodeType type;
 
 	protected int requirementQuantity = 0;
+
+	public TechNodeTier tier;
 
 	public TechNode(String id, TechNodeType type,
 			Map<ResearchType, Double> costs) {
@@ -81,6 +106,17 @@ public class TechNode {
 	 * */
 	public TechNode setDecsription(String desc) {
 		this.description = desc;
+		return this;
+	}
+
+	/**
+	 * Sets the 'tier' of the node.
+	 * 
+	 * A tiered node requires a set number of nodes from the previous tier to be
+	 * unlocked before it is available
+	 * */
+	public TechNode setTier(TechNodeTier tier) {
+		this.tier = tier;
 		return this;
 	}
 
@@ -304,6 +340,7 @@ public class TechNode {
 
 		List<String> uns = new ArrayList<String>();
 		for (ItemStack it : unlocks) {
+
 			uns.add(StatCollector.translateToLocal(it.getUnlocalizedName()
 					+ ".name"));
 		}
@@ -326,6 +363,12 @@ public class TechNode {
 		if (this.requirementQuantity > 0
 				&& ptdep.getCompletedNodes().size() < this.requirementQuantity) {
 			return false;
+		}
+		if (this.tier != null && this.tier.tierNum > 0) {
+			TechNodeTier lastTier = TechNodeTier.getTier(this.tier.tierNum - 1);
+			if (ptdep.getTieredNodes(lastTier).size() < lastTier.quantity) {
+				return false;
+			}
 		}
 		for (ResearchType rt : this.costs.keySet()) {
 			if (!ptdep.hasDiscovered(rt)) {
