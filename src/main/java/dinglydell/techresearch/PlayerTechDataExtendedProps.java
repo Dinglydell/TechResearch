@@ -363,7 +363,12 @@ public class PlayerTechDataExtendedProps implements IExtendedEntityProperties {
 	public <T> void addResearchPoints(Experiment<T> exp,
 			double multiplier,
 			T context) {
-
+		if (!exp.cooldownValid(this, context)) {
+			// player.addChatMessage(new ChatComponentText(
+			// "You won't be able to learn anything from "
+			// + exp.getDisplayName() + " for a while."));
+			return;
+		}
 		Map<ResearchType, Double> discoveredPointsSet = new HashMap<ResearchType, Double>();
 		Map<ResearchType, Double> values = exp.getValues(this,
 				multiplier,
